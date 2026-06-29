@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMU Marathon — ผังบูธจัดจำหน่ายสินค้า</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0f1117;
+  --surface:  #1a1d27;
+  --card:     #22263a;
+  --border:   #2e3350;
+  --text:     #e8eaf0;
+  --muted:    #7c82a0;
+  --accent:   #f1c40f;
+  --av:       #22c55e; --av-bg: #052e16;
+  --pend:     #f59e0b; --pend-bg: #1c1506;
+  --resv:     #3b82f6; --resv-bg: #0a1628;
+  --spon:     #a78bfa; --spon-bg: #1a0f2e;
+  --blk:      #4b5563; --blk-bg:  #111;
+  --radius:   8px;
+}
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ── TOPBAR ── */
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: .75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: sticky; top: 0; z-index: 100; }
+.topbar-brand { display: flex; align-items: center; gap: .75rem; }
+.topbar-brand img { width: 36px; height: 36px; object-fit: contain; }
+.brand-text { font-size: 13px; font-weight: 600; color: var(--accent); line-height: 1.3; }
+.brand-sub  { font-size: 10px; color: var(--muted); font-weight: 400; }
+.topbar-right { display: flex; align-items: center; gap: .75rem; }
+#admin-badge { display: none; background: var(--accent); color: #000; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+#login-btn, #logout-btn { font-size: 12px; padding: 5px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; }
+#login-btn:hover, #logout-btn:hover { border-color: var(--accent); color: var(--accent); }
+#logout-btn { display: none; }
+
+/* ── LAYOUT ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+.main-grid { display: grid; grid-template-columns: 1fr 280px; gap: 1rem; align-items: start; }
+@media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+/* ── DASHBOARD ── */
+.dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 1rem; }
+@media (max-width: 600px) { .dashboard { grid-template-columns: repeat(3, 1fr); } }
+.stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem .5rem; text-align: center; }
+.stat-num  { font-size: 22px; font-weight: 700; }
+.stat-label{ font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ── LEGEND ── */
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-bottom: .75rem; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.leg-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+/* ── FLOOR PLAN ── */
+.floor-outer { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; overflow-x: auto; }
+.floor { display: flex; flex-direction: column; gap: 10px; min-width: 540px; }
+.zone-row { display: flex; gap: 8px; align-items: flex-start; justify-content: flex-end; }
+.zone-col  { display: flex; flex-direction: column; gap: 4px; }
+.zone-label{ font-size: 9px; color: var(--muted); text-align: center; margin-bottom: 2px; letter-spacing: .05em; }
+.booth {
+  width: 46px; height: 46px; border-radius: 6px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer; border: 1.5px solid transparent;
+  transition: transform .12s, box-shadow .12s; position: relative; user-select: none;
+  font-size: 11px; font-weight: 600; line-height: 1.2;
+}
+.booth:hover { transform: scale(1.1); box-shadow: 0 0 0 2px var(--accent); z-index: 2; }
+.booth.selected { box-shadow: 0 0 0 2px var(--accent); transform: scale(1.06); }
+.booth-timer { font-size: 7px; font-weight: 400; opacity: .85; }
+.b-av   { background: var(--av-bg);   border-color: var(--av);   color: var(--av);   }
+.b-pend { background: var(--pend-bg); border-color: var(--pend); color: var(--pend); }
+.b-resv { background: var(--resv-bg); border-color: var(--resv); color: var(--resv); }
+.b-spon { background: var(--spon-bg); border-color: var(--spon); color: var(--spon); }
+.b-blk  { background: var(--blk-bg);  border-color: var(--blk);  color: var(--blk);  }
+
+.blocker { background: #f59e0b33; border: 1.5px solid #f59e0b66; border-radius: 4px; width: 8px; align-self: stretch; }
+.area-box { background: var(--card); border: 1px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); text-align: center; padding: .5rem; flex: 1; min-height: 80px; }
+.bottom-row { display: flex; gap: 8px; align-items: stretch; }
+
+/* ── PANEL ── */
+.panel { display: flex; flex-direction: column; gap: .75rem; }
+.panel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+.panel-title { font-size: 13px; font-weight: 600; margin-bottom: .25rem; }
+.panel-sub   { font-size: 11px; color: var(--muted); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; }
+.badge-av   { background: var(--av-bg);   color: var(--av);   border: 1px solid var(--av);   }
+.badge-pend { background: var(--pend-bg); color: var(--pend); border: 1px solid var(--pend); }
+.badge-resv { background: var(--resv-bg); color: var(--resv); border: 1px solid var(--resv); }
+.badge-spon { background: var(--spon-bg); color: var(--spon); border: 1px solid var(--spon); }
+.badge-blk  { background: var(--blk-bg);  color: var(--blk);  border: 1px solid var(--blk);  }
+.info-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; border-bottom: 1px solid var(--border); }
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--muted); }
+.info-val   { font-weight: 500; text-align: right; max-width: 160px; word-break: break-all; }
+.private-box { background: var(--card); border: 1px dashed #3b82f688; border-radius: var(--radius); padding: .75rem; margin-top: .5rem; }
+.private-title { font-size: 10px; color: #3b82f6; font-weight: 700; margin-bottom: .5rem; display: flex; align-items: center; gap: 4px; }
+.countdown { color: var(--pend); font-weight: 700; }
+
+/* ── ADMIN ACTIONS ── */
+.admin-section { border-top: 1px solid var(--border); padding-top: .75rem; margin-top: .5rem; display: none; }
+.section-label { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: .5rem; letter-spacing: .05em; }
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.act-btn { padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 11px; cursor: pointer; text-align: center; width: 100%; }
+.act-btn:hover { border-color: var(--accent); color: var(--accent); }
+.act-btn.danger { border-color: #ef444488; color: #ef4444; }
+.act-btn.danger:hover { background: #1f0a0a; }
+.act-btn.confirm { border-color: var(--av); color: var(--av); grid-column: span 2; }
+.act-btn.confirm:hover { background: var(--av-bg); }
+.field-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: .5rem; }
+.field-label { font-size: 10px; color: var(--muted); }
+.field-input { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 12px; padding: 5px 8px; width: 100%; }
+.field-input:focus { outline: none; border-color: var(--accent); }
+.field-input::placeholder { color: var(--muted); }
+.save-btn { width: 100%; padding: 7px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: .25rem; }
+.save-btn:hover { opacity: .9; }
+
+/* ── QUEUE ── */
+.queue-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+.q-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: var(--card); border-radius: var(--radius); font-size: 11px; border: 1px solid transparent; }
+.q-active { border-color: var(--accent); background: #1c1a06; }
+.q-num  { color: var(--muted); min-width: 20px; }
+.q-name { color: var(--text); font-weight: 500; flex: 1; padding: 0 6px; }
+.q-status { font-size: 10px; }
+.q-call-btn { font-size: 10px; padding: 2px 6px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: 700; }
+
+/* ── PENDING COUNTDOWNS ── */
+.pending-list { display: flex; flex-direction: column; gap: 4px; }
+.pend-item { display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.pend-item:last-child { border-bottom: none; }
+
+/* ── MODAL / OVERLAY ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: .75rem; }
+.modal-title { font-size: 14px; font-weight: 600; }
+.modal-body  { font-size: 12px; color: var(--muted); }
+.modal-btns  { display: flex; gap: 8px; }
+.modal-btns button { flex: 1; padding: 7px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 12px; }
+.modal-btns .confirm { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem 1.2rem; font-size: 12px; z-index: 300; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; }
+.toast.ok  { border-color: var(--av);   color: var(--av);   }
+.toast.err { border-color: #ef4444; color: #ef4444; }
+
+/* ── LOADING ── */
+.loading { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: 2rem; color: var(--muted); font-size: 13px; }
+.spin { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div>
+      <div class="brand-text">CMU MARATHON</div>
+      <div class="brand-sub">ผังบูธจัดจำหน่ายสินค้า · 9th</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="admin-badge">ADMIN</span>
+    <button id="login-btn" onclick="startLogin()">เข้าสู่ระบบ Admin</button>
+    <button id="logout-btn" onclick="doLogout()">ออกจากระบบ</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container" style="margin-top:1rem">
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+    <div class="stat"><div class="stat-num" id="d-total">—</div><div class="stat-label">ทั้งหมด</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--av)"   id="d-av">—</div><div class="stat-label">ว่าง</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--pend)" id="d-pend">—</div><div class="stat-label">รอโอน</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--resv)" id="d-resv">—</div><div class="stat-label">จองแล้ว</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--spon)" id="d-spon">—</div><div class="stat-label">Sponsor</div></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--av)"></div>ว่าง</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--pend)"></div>รอโอนเงิน</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--resv)"></div>จองแล้ว</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--spon)"></div>Sponsor</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--blk)"></div>ปิด</div>
+  </div>
+
+  <div class="main-grid">
+    <!-- FLOOR PLAN -->
+    <div>
+      <div class="floor-outer">
+        <div class="floor" id="floor">
+          <div class="loading"><div class="spin"></div>กำลังโหลดผังบูธ...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="panel">
+
+      <!-- Booth Info -->
+      <div class="panel-card" id="panel-default">
+        <div class="panel-title">คลิกบูธเพื่อดูข้อมูล</div>
+        <div class="panel-sub" id="panel-hint">ทุกคนสามารถดูสถานะบูธได้</div>
+      </div>
+
+      <div class="panel-card" id="panel-booth" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.5rem">
+          <div>
+            <div class="panel-title" id="p-id">—</div>
+            <div class="panel-sub"  id="p-type">—</div>
+          </div>
+          <span class="badge" id="p-badge">—</span>
+        </div>
+
+        <div id="p-public-info">
+          <div class="info-row"><span class="info-label">ราคา</span><span class="info-val" id="p-price">—</span></div>
+          <div class="info-row"><span class="info-label">ชื่อร้าน</span><span class="info-val" id="p-brand">—</span></div>
+          <div class="info-row"><span class="info-label">รายละเอียด</span><span class="info-val" id="p-desc">—</span></div>
+          <div class="info-row" id="p-timer-row" style="display:none">
+            <span class="info-label">หมดเวลา</span>
+            <span class="info-val countdown" id="p-timer">—</span>
+          </div>
+        </div>
+
+        <!-- Private (Admin only) -->
+        <div class="private-box" id="p-private" style="display:none">
+          <div class="private-title">🔒 ข้อมูลส่วนตัว — Admin เท่านั้น</div>
+          <div class="info-row"><span class="info-label">ชื่อ-นามสกุล</span><span class="info-val" id="p-name">—</span></div>
+          <div class="info-row"><span class="info-label">เบอร์โทร</span><span class="info-val" id="p-phone">—</span></div>
+          <div class="info-row"><span class="info-label">อีเมล</span><span class="info-val" id="p-email">—</span></div>
+          <div class="info-row"><span class="info-label">ที่อยู่</span><span class="info-val" id="p-addr">—</span></div>
+          <div class="info-row" id="p-tax-row"><span class="info-label">เลขผู้เสียภาษี</span><span class="info-val" id="p-tax">—</span></div>
+          <div class="info-row"><span class="info-label">หมายเหตุ</span><span class="info-val" id="p-note">—</span></div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="admin-section" id="admin-actions">
+          <div class="section-label">เปลี่ยนสถานะ</div>
+          <div class="status-grid">
+            <button class="act-btn" onclick="doUpdateStatus('AVAILABLE')">ว่าง</button>
+            <button class="act-btn" onclick="doUpdateStatus('PENDING_PAYMENT')">รอโอน</button>
+            <button class="act-btn" onclick="doUpdateStatus('RESERVED')">จองแล้ว</button>
+            <button class="act-btn" onclick="doUpdateStatus('BLOCKED')">ปิดบูธ</button>
+            <button class="act-btn confirm" onclick="doConfirmPayment()">✓ ยืนยันโอนเงิน</button>
+          </div>
+
+          <div style="margin-top:.75rem">
+            <div class="section-label">ข้อมูลสาธารณะ</div>
+            <div class="field-group"><div class="field-label">ชื่อร้าน / แบรนด์</div><input class="field-input" id="f-brand" placeholder="เช่น ร้านกาแฟดอยช้าง"></div>
+            <div class="field-group"><div class="field-label">รายละเอียดสินค้า/บริการ</div><input class="field-input" id="f-desc" placeholder="เช่น กาแฟ เครื่องดื่ม ขนม"></div>
+          </div>
+
+          <div style="margin-top:.75rem">
+            <div class="section-label">🔒 ข้อมูลส่วนตัว</div>
+            <div class="field-group"><div class="field-label">ชื่อ-นามสกุล</div><input class="field-input" id="f-name" placeholder="ผู้ติดต่อ"></div>
+            <div class="field-group"><div class="field-label">เบอร์โทรศัพท์</div><input class="field-input" id="f-phone" placeholder="08x-xxx-xxxx"></div>
+            <div class="field-group"><div class="field-label">อีเมล</div><input class="field-input" id="f-email" placeholder="email@example.com"></div>
+            <div class="field-group"><div class="field-label">ที่อยู่</div><input class="field-input" id="f-addr" placeholder="ที่อยู่จัดส่งใบเสร็จ"></div>
+            <div class="field-group"><div class="field-label">เลขผู้เสียภาษี (ถ้ามี)</div><input class="field-input" id="f-tax" placeholder="13 หลัก"></div>
+            <div class="field-group"><div class="field-label">หมายเหตุ Admin</div><input class="field-input" id="f-note" placeholder="บันทึกภายใน"></div>
+            <button class="save-btn" onclick="doSaveVendor()">บันทึกข้อมูล</button>
+            <button class="act-btn danger" onclick="doCancelBooth()" style="margin-top:6px">ยกเลิกการจอง</button>
+          </div>
+        </div>
+
+        <button class="act-btn" onclick="closePanel()" style="margin-top:.75rem;width:100%;text-align:center">ปิด</button>
+      </div>
+
+      <!-- Queue -->
+      <div class="panel-card" id="panel-queue" style="display:none">
+        <div class="panel-title" style="margin-bottom:.5rem">คิวรอเลือกบูธ</div>
+        <div class="queue-list" id="queue-list"></div>
+      </div>
+
+      <!-- Pending Countdowns -->
+      <div class="panel-card" id="panel-pending" style="display:none">
+        <div class="panel-title" style="margin-bottom:.5rem">บูธรอโอนเงิน</div>
+        <div class="pending-list" id="pending-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="ov-title">ยืนยัน?</div>
+    <div class="modal-body"  id="ov-body"></div>
+    <div class="modal-btns">
+      <button onclick="closeOverlay()">ยกเลิก</button>
+      <button class="confirm" id="ov-ok">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbxvXikv2kdTSfoucOX9VbzE0OybpVQ9ysuC_rOFoeUy6q80gn5z6qwEl0pBm_Of7pCG6g/exec';
+const CLIENT_ID = const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
+
+// ── STATE ────────────────────────────────────────────────────
+let booths      = [];
+let selectedId  = null;
+let adminToken  = localStorage.getItem('admin_token') || '';
+let isAdmin     = false;
+let pendingCb   = null;
+let timerInterval = null;
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (adminToken) verifySession();
+  loadBooths();
+  loadDashboard();
+  loadQueue();
+  setInterval(loadBooths,    30000);
+  setInterval(loadDashboard, 15000);
+  setInterval(loadQueue,     15000);
+  setInterval(tickTimers,    60000);
+});
+
+// ── API ──────────────────────────────────────────────────────
+async function gasGet(action, params = {}) {
+  const url = new URL(GAS_URL);
+  url.searchParams.set('action', action);
+  if (adminToken) url.searchParams.set('token', adminToken);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res  = await fetch(url, { redirect: 'follow' });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error);
+  return json.data;
+}
+
+async function gasPost(payload) {
+  if (adminToken) payload.token = adminToken;
+  const res  = await fetch(GAS_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload),
+    redirect: 'follow',
+  });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error);
+  return json.data;
+}
+
+// ── LOAD DATA ────────────────────────────────────────────────
+async function loadBooths() {
+  try {
+    booths = await gasGet('getBooths');
+    renderFloor();
+    if (selectedId) refreshPanel();
+  } catch (e) { console.error('loadBooths:', e); }
+}
+
+async function loadDashboard() {
+  try {
+    const d = await gasGet('getDashboard');
+    document.getElementById('d-total').textContent = d.total;
+    document.getElementById('d-av').textContent    = d.counts.AVAILABLE       || 0;
+    document.getElementById('d-pend').textContent  = d.counts.PENDING_PAYMENT || 0;
+    document.getElementById('d-resv').textContent  = d.counts.RESERVED        || 0;
+    document.getElementById('d-spon').textContent  = d.counts.SPONSOR         || 0;
+    renderPending(d.pending || []);
+  } catch (e) { console.error('loadDashboard:', e); }
+}
+
+async function loadQueue() {
+  try {
+    const q = await gasGet('getQueue');
+    renderQueue(q);
+  } catch (e) { console.error('loadQueue:', e); }
+}
+
+// ── RENDER FLOOR ─────────────────────────────────────────────
+const STATUS_CLS = {
+  AVAILABLE: 'b-av', PENDING_PAYMENT: 'b-pend',
+  RESERVED: 'b-resv', SPONSOR: 'b-spon', BLOCKED: 'b-blk',
+};
+const STATUS_LABEL = {
+  AVAILABLE: 'ว่าง', PENDING_PAYMENT: 'รอโอน',
+  RESERVED: 'จองแล้ว', SPONSOR: 'Sponsor', BLOCKED: 'ปิด',
+};
+const BADGE_CLS = {
+  AVAILABLE: 'badge-av', PENDING_PAYMENT: 'badge-pend',
+  RESERVED: 'badge-resv', SPONSOR: 'badge-spon', BLOCKED: 'badge-blk',
+};
+
+function getBoothEl(id) {
+  const b = booths.find(x => x.booth_id === id);
+  if (!b) return `<div class="booth b-blk" style="opacity:.3">${id}</div>`;
+  const cls = STATUS_CLS[b.status] || 'b-blk';
+  const sel = selectedId === id ? ' selected' : '';
+  const timer = b.expire_at
+    ? `<div class="booth-timer">${fmtRemaining(b.expire_at)}</div>` : '';
+  return `<div class="booth ${cls}${sel}" onclick="clickBooth('${id}')"
+    title="${b.brand || STATUS_LABEL[b.status]}">${id}${timer}</div>`;
+}
+
+function renderFloor() {
+  const f = document.getElementById('floor');
+  f.innerHTML = `
+    <div class="zone-row">
+      <div class="zone-col">
+        <div class="zone-label">D</div>
+        ${['D1','D2','D3','D4','D5','D6'].map(getBoothEl).join('')}
+      </div>
+      <div class="blocker"></div>
+      <div class="zone-col">
+        <div class="zone-label">C</div>
+        ${['C7','C8','C9','C10','C11','C12'].map(getBoothEl).join('')}
+      </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['C1','C2','C3','C4','C5','C6'].map(getBoothEl).join('')}
+      </div>
+      <div class="blocker"></div>
+      <div class="zone-col">
+        <div class="zone-label">B</div>
+        ${['B7','B8','B9','B10','B11','B12'].map(getBoothEl).join('')}
+      </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['B1','B2','B3','B4','B5','B6'].map(getBoothEl).join('')}
+      </div>
+      <div class="blocker"></div>
+      <div class="zone-col">
+        <div class="zone-label">A</div>
+        ${['A1','A2','A3','A4','A5'].map(getBoothEl).join('')}
+      </div>
+    </div>
+    <div class="bottom-row">
+      <div class="zone-col">
+        <div class="zone-label">S · Sponsor</div>
+        ${['S1','S2','S3','S4'].map(getBoothEl).join('')}
+      </div>
+      <div class="area-box">จุดพยาบาล<br>จุดรับ Bib<br>จุดอำนวยการ</div>
+      <div class="zone-col">
+        <div class="zone-label">E</div>
+        ${getBoothEl('E')}
+      </div>
+    </div>`;
+}
+
+// ── PANEL ────────────────────────────────────────────────────
+function clickBooth(id) {
+  selectedId = id;
+  renderFloor();
+  openPanel(id);
+}
+
+function openPanel(id) {
+  const b = booths.find(x => x.booth_id === id);
+  if (!b) return;
+
+  document.getElementById('panel-default').style.display = 'none';
+  document.getElementById('panel-booth').style.display   = 'block';
+
+  document.getElementById('p-id').textContent   = 'บูธ ' + id;
+  document.getElementById('p-type').textContent =
+    b.type === 'corner'  ? 'บูธหัวมุม · 5,500 ฿' :
+    b.type === 'sponsor' ? 'Sponsor · 7,000 ฿'    : 'บูธปกติ · 5,000 ฿';
+
+  const badge = document.getElementById('p-badge');
+  badge.textContent = STATUS_LABEL[b.status];
+  badge.className   = 'badge ' + (BADGE_CLS[b.status] || '');
+
+  document.getElementById('p-price').textContent = Number(b.price).toLocaleString() + ' ฿';
+  document.getElementById('p-brand').textContent = b.brand       || '(ว่าง)';
+  document.getElementById('p-desc').textContent  = b.description || '—';
+
+  const tr = document.getElementById('p-timer-row');
+  if (b.expire_at) {
+    tr.style.display = 'flex';
+    document.getElementById('p-timer').textContent = fmtRemaining(b.expire_at);
+  } else { tr.style.display = 'none'; }
+
+  // Admin-only private info
+  const pa = document.getElementById('p-private');
+  const aa = document.getElementById('admin-actions');
+  if (isAdmin) {
+    pa.style.display = 'block';
+    aa.style.display = 'block';
+    loadPrivateInfo(id);
+    document.getElementById('f-brand').value = b.brand       || '';
+    document.getElementById('f-desc').value  = b.description || '';
+  } else {
+    pa.style.display = 'none';
+    aa.style.display = 'none';
+  }
+}
+
+async function loadPrivateInfo(id) {
+  try {
+    const data = await gasGet('getBoothAdmin', { booth_id: id });
+    const v = data.vendor || {};
+    document.getElementById('p-name').textContent  = v.full_name || '—';
+    document.getElementById('p-phone').textContent = v.phone     || '—';
+    document.getElementById('p-email').textContent = v.email     || '—';
+    document.getElementById('p-addr').textContent  = v.address   || '—';
+    document.getElementById('p-note').textContent  = data.note   || '—';
+    const taxRow = document.getElementById('p-tax-row');
+    if (v.tax_id) {
+      taxRow.style.display = 'flex';
+      document.getElementById('p-tax').textContent = v.tax_id;
+    } else { taxRow.style.display = 'none'; }
+    document.getElementById('f-name').value  = v.full_name || '';
+    document.getElementById('f-phone').value = v.phone     || '';
+    document.getElementById('f-email').value = v.email     || '';
+    document.getElementById('f-addr').value  = v.address   || '';
+    document.getElementById('f-tax').value   = v.tax_id    || '';
+    document.getElementById('f-note').value  = data.note   || '';
+  } catch (e) { console.error('loadPrivateInfo:', e); }
+}
+
+function refreshPanel() { if (selectedId) openPanel(selectedId); }
+
+function closePanel() {
+  selectedId = null;
+  renderFloor();
+  document.getElementById('panel-default').style.display = 'block';
+  document.getElementById('panel-booth').style.display   = 'none';
+}
+
+// ── ADMIN ACTIONS ─────────────────────────────────────────────
+async function doUpdateStatus(status) {
+  if (!selectedId) return;
+  const label = STATUS_LABEL[status];
+  confirm2(`เปลี่ยนสถานะบูธ ${selectedId} เป็น "${label}"?`, '', async () => {
+    try {
+      await gasPost({ action: 'updateStatus', booth_id: selectedId, status });
+      toast('เปลี่ยนสถานะเรียบร้อย', 'ok');
+      await loadBooths(); await loadDashboard(); openPanel(selectedId);
+    } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+  });
+}
+
+async function doSaveVendor() {
+  if (!selectedId) return;
+  const vendor = {
+    brand:       document.getElementById('f-brand').value,
+    description: document.getElementById('f-desc').value,
+    full_name:   document.getElementById('f-name').value,
+    phone:       document.getElementById('f-phone').value,
+    email:       document.getElementById('f-email').value,
+    address:     document.getElementById('f-addr').value,
+    tax_id:      document.getElementById('f-tax').value,
+    note:        document.getElementById('f-note').value,
+  };
+  try {
+    await gasPost({ action: 'saveVendor', booth_id: selectedId, vendor });
+    toast('บันทึกข้อมูลเรียบร้อย', 'ok');
+    await loadBooths(); openPanel(selectedId);
+  } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+}
+
+async function doCancelBooth() {
+  if (!selectedId) return;
+  confirm2(`ยกเลิกการจองบูธ ${selectedId}?`, 'ข้อมูลร้านค้าจะถูกล้าง สถานะกลับเป็นว่าง', async () => {
+    try {
+      await gasPost({ action: 'cancelBooth', booth_id: selectedId });
+      toast('ยกเลิกการจองเรียบร้อย', 'ok');
+      await loadBooths(); await loadDashboard(); openPanel(selectedId);
+    } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+  });
+}
+
+async function doConfirmPayment() {
+  if (!selectedId) return;
+  confirm2(`ยืนยันการโอนเงินบูธ ${selectedId}?`, 'สถานะจะเปลี่ยนเป็น "จองแล้ว" และส่ง Email ยืนยันให้ร้านค้า', async () => {
+    try {
+      await gasPost({ action: 'confirmPayment', booth_id: selectedId });
+      toast('ยืนยันการโอนเงินเรียบร้อย', 'ok');
+      await loadBooths(); await loadDashboard(); openPanel(selectedId);
+    } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+  });
+}
+
+// ── QUEUE ─────────────────────────────────────────────────────
+function renderQueue(q) {
+  const panel = document.getElementById('panel-queue');
+  const list  = document.getElementById('queue-list');
+  if (!q || q.length === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  list.innerHTML = q.map(item => `
+    <div class="q-item ${item.status === 'ACTIVE' ? 'q-active' : ''}">
+      <span class="q-num">${item.queue_number}</span>
+      <span class="q-name">${item.brand || '(ไม่ระบุ)'}</span>
+      <span class="q-status">${item.status === 'ACTIVE' ? '🟡 กำลังเลือก' : ''}</span>
+      ${isAdmin && item.status === 'WAITING'
+        ? `<button class="q-call-btn" onclick="doCallQueue('${item.queue_id}')">เรียก</button>` : ''}
+    </div>`).join('');
+}
+
+async function doCallQueue(queueId) {
+  try {
+    const q = await gasPost({ action: 'callQueue', queue_id: queueId, action_type: 'CALL' });
+    renderQueue(q); toast('เรียกคิวเรียบร้อย', 'ok');
+  } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+}
+
+// ── PENDING COUNTDOWNS ────────────────────────────────────────
+function renderPending(pending) {
+  const panel = document.getElementById('panel-pending');
+  const list  = document.getElementById('pending-list');
+  if (!pending || pending.length === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  list.innerHTML = pending.map(p => `
+    <div class="pend-item">
+      <span style="font-weight:600">${p.booth_id}</span>
+      <span style="color:var(--muted);font-size:11px">${p.brand || '—'}</span>
+      <span class="countdown">${fmtRemaining(p.expire_at)}</span>
+    </div>`).join('');
+}
+
+function tickTimers() { loadDashboard(); if (selectedId) refreshPanel(); }
+
+// ── AUTH ──────────────────────────────────────────────────────
+function startLogin() {
+  if (typeof google === 'undefined') {
+    toast('กำลังโหลด Google Sign-In...', 'err'); return;
+  }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'openid email profile',
+    callback: async (resp) => {
+      if (resp.error) { toast('Login ล้มเหลว', 'err'); return; }
+      try {
+        // แลก access token เป็น id_token ผ่าน userinfo
+        const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: 'Bearer ' + resp.access_token }
+        }).then(r => r.json());
+        const data = await gasPost({ action: 'login', id_token: resp.access_token, email: info.email });
+        adminToken = data.token;
+        localStorage.setItem('admin_token', adminToken);
+        setAdminMode(true, info.email);
+        toast('เข้าสู่ระบบสำเร็จ: ' + info.email, 'ok');
+        loadQueue();
+      } catch (e) { toast('ไม่มีสิทธิ์ Admin: ' + e.message, 'err'); }
+    }
+  });
+  client.requestAccessToken();
+}
+
+function verifySession() {
+  // ลอง call API ที่ต้อง auth เพื่อตรวจ token ยังใช้ได้ไหม
+  gasGet('getBoothAdmin', { booth_id: 'A1' })
+    .then(() => setAdminMode(true))
+    .catch(() => { adminToken = ''; localStorage.removeItem('admin_token'); });
+}
+
+function setAdminMode(on, email) {
+  isAdmin = on;
+  document.getElementById('admin-badge').style.display = on ? 'inline' : 'none';
+  document.getElementById('login-btn').style.display   = on ? 'none'   : 'inline';
+  document.getElementById('logout-btn').style.display  = on ? 'inline' : 'none';
+  document.getElementById('panel-hint').textContent    = on
+    ? 'Admin: เห็นข้อมูลทั้งหมด' : 'ทุกคนสามารถดูสถานะบูธได้';
+  if (selectedId) openPanel(selectedId);
+}
+
+function doLogout() {
+  adminToken = ''; isAdmin = false;
+  localStorage.removeItem('admin_token');
+  setAdminMode(false);
+  toast('ออกจากระบบแล้ว', 'ok');
+  renderQueue([]);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function fmtRemaining(isoStr) {
+  const diff = new Date(isoStr).getTime() - Date.now();
+  if (diff <= 0) return 'หมดเวลา';
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  return h + 'h ' + m + 'm';
+}
+
+function confirm2(title, body, cb) {
+  document.getElementById('ov-title').textContent = title;
+  document.getElementById('ov-body').textContent  = body;
+  pendingCb = cb;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('ov-ok').onclick = () => { cb(); closeOverlay(); };
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  pendingCb = null;
+}
+
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'toast ' + (type || '') + ' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
