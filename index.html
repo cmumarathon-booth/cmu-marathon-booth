@@ -338,6 +338,57 @@ a { color: var(--accent); text-decoration: none; }
   </div>
 </div>
 
+<!-- VENDOR SELECTION MODE -->
+<div id="vendor-mode" style="display:none;position:fixed;inset:0;background:#fff;z-index:500;overflow-y:auto">
+  <div style="max-width:640px;margin:0 auto;padding:2rem 1rem">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:22px;font-weight:600;color:#7c3aed;margin-bottom:4px">CMU Marathon EXPO</div>
+      <div style="font-size:13px;color:#8b80b3">เลือกบูธที่ต้องการ</div>
+    </div>
+    <div id="vm-loading" style="text-align:center;padding:3rem;color:#8b80b3">
+      <div class="spin" style="margin:0 auto 1rem"></div>กำลังโหลด...
+    </div>
+    <div id="vm-content" style="display:none">
+      <div style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.5rem">
+        <div style="font-size:13px;font-weight:600;color:#7c3aed" id="vm-brand"></div>
+        <div style="font-size:11px;color:#8b80b3" id="vm-name"></div>
+      </div>
+      <div style="font-size:13px;font-weight:500;color:#1a1033;margin-bottom:.75rem">เลือกบูธที่ต้องการ (คลิกบูธที่ว่าง)</div>
+      <div style="background:#faf9ff;border:1.5px solid #e8e4ff;border-radius:16px;padding:1.25rem;overflow-x:auto;margin-bottom:1rem">
+        <div id="vm-floor" style="min-width:480px"></div>
+      </div>
+      <div style="font-size:11px;color:#8b80b3;margin-bottom:1.5rem">
+        <span style="display:inline-block;width:10px;height:10px;background:#f0fdf4;border:1.5px solid #16a34a;border-radius:3px;margin-right:4px"></span>ว่าง — คลิกเพื่อเลือก
+        <span style="display:inline-block;width:10px;height:10px;background:#f5f3ff;border:1.5px solid #7c3aed;border-radius:3px;margin:0 4px 0 12px"></span>จองแล้ว
+      </div>
+    </div>
+    <div id="vm-booked" style="display:none;text-align:center;padding:2rem">
+      <div style="font-size:40px;margin-bottom:1rem">✅</div>
+      <div style="font-size:16px;font-weight:600;color:#1a1033;margin-bottom:.5rem">เลือกบูธเรียบร้อยแล้ว</div>
+      <div style="font-size:13px;color:#8b80b3;margin-bottom:.5rem">บูธ <span id="vm-booked-id" style="font-weight:600;color:#7c3aed"></span></div>
+      <div style="font-size:12px;color:#d97706" id="vm-booked-timer"></div>
+      <div style="font-size:12px;color:#8b80b3;margin-top:1rem">กรุณาโอนเงินค่าบูธภายในเวลาที่กำหนด<br>แล้วแจ้งหลักฐานการโอนให้เจ้าหน้าที่</div>
+    </div>
+    <div id="vm-error" style="display:none;text-align:center;padding:2rem">
+      <div style="font-size:40px;margin-bottom:1rem">⚠️</div>
+      <div style="font-size:14px;color:#1a1033;margin-bottom:.5rem" id="vm-error-msg"></div>
+      <div style="font-size:12px;color:#8b80b3">กรุณาติดต่อเจ้าหน้าที่</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM BOOTH MODAL (vendor) -->
+<div class="overlay" id="vm-confirm-overlay">
+  <div class="modal">
+    <div class="modal-title">ยืนยันเลือกบูธ <span id="vm-confirm-id" style="color:#7c3aed"></span>?</div>
+    <div class="modal-body" id="vm-confirm-body"></div>
+    <div class="modal-btns">
+      <button onclick="document.getElementById('vm-confirm-overlay').classList.remove('open')">ยกเลิก</button>
+      <button class="confirm" id="vm-confirm-ok">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -820,6 +871,129 @@ function toast(msg, type) {
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('show'), 3000);
 }
+
+// ── VENDOR MODE ───────────────────────────────────────────────
+let vendorToken = null;
+let vendorData  = null;
+
+async function initVendorMode(token) {
+  vendorToken = token;
+  document.getElementById('vendor-mode').style.display = 'block';
+  document.getElementById('vm-loading').style.display  = 'block';
+  document.getElementById('vm-content').style.display  = 'none';
+
+  try {
+    vendorData = await gasGet('getVendorByToken', { token });
+
+    if (vendorData.already_booked) {
+      showVmBooked(vendorData.already_booked);
+      return;
+    }
+
+    document.getElementById('vm-brand').textContent = vendorData.brand || vendorData.full_name;
+    document.getElementById('vm-name').textContent  = 'คุณ ' + vendorData.full_name;
+
+    // โหลดบูธ
+    booths = await gasGet('getBooths');
+    renderVmFloor();
+
+    document.getElementById('vm-loading').style.display = 'none';
+    document.getElementById('vm-content').style.display = 'block';
+  } catch (err) {
+    document.getElementById('vm-loading').style.display  = 'none';
+    document.getElementById('vm-error').style.display    = 'block';
+    document.getElementById('vm-error-msg').textContent  = err.message;
+  }
+}
+
+function renderVmFloor() {
+  const f = document.getElementById('vm-floor');
+  f.innerHTML = `
+    <div style="display:flex;gap:0;align-items:flex-start">
+      <div class="zone-col">
+        <div class="zone-label">D</div>
+        ${['D1','D2','D3','D4','D5','D6'].map(vmBoothEl).join('')}
+      </div>
+      <div style="width:20px"></div>
+      <div class="zone-col">
+        <div class="zone-label">C</div>
+        ${['C7','C8','C9','C10','C11','C12'].map(vmBoothEl).join('')}
+      </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['C1','C2','C3','C4','C5','C6'].map(vmBoothEl).join('')}
+      </div>
+      <div style="width:20px"></div>
+      <div class="zone-col">
+        <div class="zone-label">B</div>
+        ${['B7','B8','B9','B10','B11','B12'].map(vmBoothEl).join('')}
+      </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['B1','B2','B3','B4','B5','B6'].map(vmBoothEl).join('')}
+      </div>
+      <div style="width:20px"></div>
+      <div class="zone-col">
+        <div class="zone-label">A</div>
+        ${['A1','A2','A3','A4','A5'].map(vmBoothEl).join('')}
+      </div>
+    </div>`;
+}
+
+function vmBoothEl(id) {
+  const b   = booths.find(x => x.booth_id === id);
+  if (!b) return `<div class="booth b-blk" style="opacity:.3">${id}</div>`;
+  const avail = b.status === 'AVAILABLE';
+  const cls   = avail ? 'b-av' : 'b-resv';
+  const cur   = avail ? 'cursor:pointer' : 'cursor:not-allowed;opacity:.5';
+  return `<div class="booth ${cls}" style="${cur}" onclick="${avail ? `vmClickBooth('${id}')` : ''}"
+    title="${avail ? 'คลิกเพื่อเลือกบูธ' : STATUS_LABEL[b.status]}">${id}</div>`;
+}
+
+function vmClickBooth(id) {
+  const b = booths.find(x => x.booth_id === id);
+  if (!b || b.status !== 'AVAILABLE') return;
+  document.getElementById('vm-confirm-id').textContent   = id;
+  document.getElementById('vm-confirm-body').textContent =
+    `ราคา ${Number(b.price).toLocaleString()} ฿ · ${b.type === 'corner' ? 'บูธหัวมุม' : b.type === 'sponsor' ? 'Sponsor' : 'บูธปกติ'}`;
+  document.getElementById('vm-confirm-overlay').classList.add('open');
+  document.getElementById('vm-confirm-ok').onclick = () => vmConfirmBooth(id);
+}
+
+async function vmConfirmBooth(boothId) {
+  document.getElementById('vm-confirm-overlay').classList.remove('open');
+  document.getElementById('vm-loading').style.display = 'block';
+  document.getElementById('vm-content').style.display = 'none';
+  try {
+    const result = await gasGet('selectBoothByVendor', { token: vendorToken, booth_id: boothId });
+    showVmBooked(result.booth_id, result.expire_at);
+  } catch (err) {
+    document.getElementById('vm-loading').style.display = 'none';
+    document.getElementById('vm-content').style.display = 'block';
+    toast('เกิดข้อผิดพลาด: ' + err.message, 'err');
+  }
+}
+
+function showVmBooked(boothId, expireAt) {
+  document.getElementById('vm-loading').style.display = 'none';
+  document.getElementById('vm-content').style.display = 'none';
+  document.getElementById('vm-booked').style.display  = 'block';
+  document.getElementById('vm-booked-id').textContent = boothId;
+  if (expireAt) {
+    document.getElementById('vm-booked-timer').textContent =
+      'กรุณาโอนเงินภายใน ' + fmtRemaining(expireAt);
+  }
+}
+
+// ── ENTRY POINT ───────────────────────────────────────────────
+// ตรวจ URL token ตอน load
+(function checkToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('token');
+  if (token) {
+    window.addEventListener('load', () => initVendorMode(token));
+  }
+})();
 </script>
 </body>
 </html>
