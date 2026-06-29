@@ -306,8 +306,8 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
-const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbxvXikv2kdTSfoucOX9VbzE0OybpVQ9ysuC_rOFoeUy6q80gn5z6qwEl0pBm_Of7pCG6g/exec';
+const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
 let booths      = [];
@@ -343,12 +343,12 @@ async function gasGet(action, params = {}) {
 
 async function gasPost(payload) {
   if (adminToken) payload.token = adminToken;
-  const res  = await fetch(GAS_URL, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(payload),
-    redirect: 'follow',
-  });
+  // GAS ไม่รับ POST จาก browser (CORS) — ใช้ GET + query string แทน
+  const url = new URL(GAS_URL);
+  Object.entries(payload).forEach(([k, v]) =>
+    url.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : v)
+  );
+  const res  = await fetch(url.toString(), { redirect: 'follow' });
   const json = await res.json();
   if (!json.success) throw new Error(json.error);
   return json.data;
