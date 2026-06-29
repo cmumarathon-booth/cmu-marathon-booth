@@ -306,8 +306,8 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
-const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbxvXikv2kdTSfoucOX9VbzE0OybpVQ9ysuC_rOFoeUy6q80gn5z6qwEl0pBm_Of7pCG6g/exec';
+const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
 let booths      = [];
@@ -316,6 +316,7 @@ let adminToken  = localStorage.getItem('admin_token') || '';
 let isAdmin     = false;
 let pendingCb   = null;
 let timerInterval = null;
+let isEditing   = false; // true เมื่อ admin กำลังกรอกข้อมูล
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('load', () => {
@@ -323,10 +324,14 @@ window.addEventListener('load', () => {
   loadBooths();
   loadDashboard();
   loadQueue();
-  setInterval(loadBooths,    30000);
-  setInterval(loadDashboard, 15000);
+  setInterval(() => { if (!isEditing) loadBooths();    }, 30000);
+  setInterval(() => { if (!isEditing) loadDashboard(); }, 15000);
   setInterval(loadQueue,     15000);
   setInterval(tickTimers,    60000);
+
+  // ตรวจว่า admin กำลังกรอกข้อมูลอยู่ไหม
+  document.addEventListener('focusin',  e => { if (e.target.classList.contains('field-input')) isEditing = true; });
+  document.addEventListener('focusout', e => { if (e.target.classList.contains('field-input')) isEditing = false; });
 });
 
 // ── API ──────────────────────────────────────────────────────
@@ -359,7 +364,7 @@ async function loadBooths() {
   try {
     booths = await gasGet('getBooths');
     renderFloor();
-    if (selectedId) refreshPanel();
+    // ไม่ refresh panel อัตโนมัติ เพื่อไม่ให้ข้อมูลที่กำลังกรอกหาย
   } catch (e) { console.error('loadBooths:', e); }
 }
 
