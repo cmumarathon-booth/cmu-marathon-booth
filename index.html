@@ -173,6 +173,14 @@ a { color: var(--accent); text-decoration: none; }
 .loading { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: 2rem; color: var(--muted); font-size: 13px; }
 .spin { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PROCESSING OVERLAY ── */
+.processing-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 700; align-items: center; justify-content: center; }
+.processing-overlay.open { display: flex; }
+.processing-box { background: #fff; border-radius: 20px; padding: 2rem 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; max-width: 280px; width: 90%; text-align: center; }
+.processing-spin { width: 40px; height: 40px; border: 3px solid #e8e4ff; border-top-color: #7c3aed; border-radius: 50%; animation: spin .7s linear infinite; }
+.processing-title { font-size: 15px; font-weight: 600; color: #1a1033; }
+.processing-sub { font-size: 12px; color: #8b80b3; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -319,6 +327,15 @@ a { color: var(--accent); text-decoration: none; }
   </div>
 </div>
 
+<!-- PROCESSING OVERLAY -->
+<div class="processing-overlay" id="processing-overlay">
+  <div class="processing-box">
+    <div class="processing-spin"></div>
+    <div class="processing-title">กำลังบันทึกข้อมูล</div>
+    <div class="processing-sub">กรุณารอสักครู่<br>อย่าปิดหน้าต่างหรือกดย้อนกลับ</div>
+  </div>
+</div>
+
 <!-- BOTTOM SHEET (mobile only) -->
 <div class="bottom-sheet-overlay" id="bs-overlay" onclick="closeMobilePanel()"></div>
 <div class="bottom-sheet" id="bottom-sheet">
@@ -430,7 +447,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbzupvCS7DlLIkMYFqW9kvfKDfAfW1XFfy7QDinDUPebhQJNp_cTEoWDtuwjvar5Fitqxw/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -1049,7 +1066,8 @@ async function vmConfirmCart() {
 
 async function vmSubmitCart() {
   document.getElementById('vm-confirm-overlay').classList.remove('open');
-  document.getElementById('vm-loading').style.display = 'block';
+  // แสดง processing overlay แทน loading ธรรมดา
+  document.getElementById('processing-overlay').classList.add('open');
   document.getElementById('vm-content').style.display = 'none';
   document.getElementById('vm-cart').style.display    = 'none';
 
@@ -1059,10 +1077,12 @@ async function vmSubmitCart() {
       token:     vendorToken,
       booth_ids: boothIds.join(','),
     });
+    document.getElementById('processing-overlay').classList.remove('open');
     showVmBooked(vmCart);
   } catch (err) {
-    document.getElementById('vm-loading').style.display = 'none';
+    document.getElementById('processing-overlay').classList.remove('open');
     document.getElementById('vm-content').style.display = 'block';
+    document.getElementById('vm-cart').style.display    = 'block';
     toast('เกิดข้อผิดพลาด: ' + err.message, 'err');
   }
 }
