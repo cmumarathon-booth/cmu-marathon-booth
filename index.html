@@ -410,81 +410,49 @@ function getBoothEl(id) {
 function renderFloor() {
   const f = document.getElementById('floor');
   f.innerHTML = `
-    <div style="display:flex;gap:8px;align-items:flex-start">
+    <div style="display:flex;gap:0;align-items:flex-start">
 
-      <!-- Zone S — แนวตั้งซ้ายสุด -->
-      <div style="display:flex;flex-direction:column;gap:4px;margin-top:18px">
-        <div class="zone-label">S</div>
-        ${['S1','S2','S3','S4'].map(getBoothEl).join('')}
+      <!-- Zone D -->
+      <div class="zone-col">
+        <div class="zone-label">D</div>
+        ${['D1','D2','D3','D4','D5','D6'].map(getBoothEl).join('')}
       </div>
 
-      <!-- แท่งกั้นซ้าย -->
-      <div class="blocker" style="margin-top:18px"></div>
+      <!-- space D-C -->
+      <div style="width:20px"></div>
 
-      <!-- Main zones: D | C | B | A -->
-      <div style="display:flex;flex-direction:column;gap:8px;flex:1">
-
-        <!-- แถวบูธหลัก -->
-        <div style="display:flex;gap:8px;align-items:flex-start">
-
-          <!-- Zone D -->
-          <div class="zone-col">
-            <div class="zone-label">D</div>
-            ${['D1','D2','D3','D4','D5','D6'].map(getBoothEl).join('')}
-          </div>
-
-          <!-- แท่งกั้น D-C -->
-          <div class="blocker"></div>
-
-          <!-- Zone C (C7-C12 | C1-C6) -->
-          <div class="zone-col">
-            <div class="zone-label">C</div>
-            ${['C7','C8','C9','C10','C11','C12'].map(getBoothEl).join('')}
-          </div>
-          <div class="zone-col">
-            <div class="zone-label">&nbsp;</div>
-            ${['C1','C2','C3','C4','C5','C6'].map(getBoothEl).join('')}
-          </div>
-
-          <!-- แท่งกั้น C-B -->
-          <div class="blocker"></div>
-
-          <!-- Zone B (B7-B12 | B1-B6) -->
-          <div class="zone-col">
-            <div class="zone-label">B</div>
-            ${['B7','B8','B9','B10','B11','B12'].map(getBoothEl).join('')}
-          </div>
-          <div class="zone-col">
-            <div class="zone-label">&nbsp;</div>
-            ${['B1','B2','B3','B4','B5','B6'].map(getBoothEl).join('')}
-          </div>
-
-          <!-- แท่งกั้น B-A -->
-          <div class="blocker"></div>
-
-          <!-- Zone A -->
-          <div class="zone-col">
-            <div class="zone-label">A</div>
-            ${['A1','A2','A3','A4','A5'].map(getBoothEl).join('')}
-          </div>
-
-        </div>
-
-        <!-- แถวล่าง: จุดพยาบาล | จุดรับ Bib | E -->
-        <div style="display:flex;gap:8px;align-items:stretch;margin-top:4px">
-          <div class="area-box" style="width:80px;min-height:70px;flex:none">จุดพยาบาล</div>
-          <div class="area-box" style="flex:1;min-height:70px">จุดรับ Bib</div>
-          <div class="zone-col" style="align-self:flex-start">
-            <div class="zone-label">E</div>
-            ${getBoothEl('E')}
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <div class="area-box" style="width:80px;min-height:50px;flex:none">จุดอำนวยการ</div>
-          <div class="area-box" style="flex:1;min-height:50px;font-size:10px;color:var(--muted)">ทางเข้ารับ Bib</div>
-        </div>
-
+      <!-- Zone C (C7-C12 | C1-C6) -->
+      <div class="zone-col">
+        <div class="zone-label">C</div>
+        ${['C7','C8','C9','C10','C11','C12'].map(getBoothEl).join('')}
       </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['C1','C2','C3','C4','C5','C6'].map(getBoothEl).join('')}
+      </div>
+
+      <!-- space C-B -->
+      <div style="width:20px"></div>
+
+      <!-- Zone B (B7-B12 | B1-B6) -->
+      <div class="zone-col">
+        <div class="zone-label">B</div>
+        ${['B7','B8','B9','B10','B11','B12'].map(getBoothEl).join('')}
+      </div>
+      <div class="zone-col">
+        <div class="zone-label">&nbsp;</div>
+        ${['B1','B2','B3','B4','B5','B6'].map(getBoothEl).join('')}
+      </div>
+
+      <!-- space B-A -->
+      <div style="width:20px"></div>
+
+      <!-- Zone A -->
+      <div class="zone-col">
+        <div class="zone-label">A</div>
+        ${['A1','A2','A3','A4','A5'].map(getBoothEl).join('')}
+      </div>
+
     </div>`;
 }
 
