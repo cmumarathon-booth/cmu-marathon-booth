@@ -362,12 +362,48 @@ a { color: var(--accent); text-decoration: none; }
         <span style="display:inline-block;width:10px;height:10px;background:#f5f3ff;border:1.5px solid #7c3aed;border-radius:3px;margin:0 4px 0 12px"></span>จองแล้ว
       </div>
     </div>
-    <div id="vm-booked" style="display:none;text-align:center;padding:2rem">
-      <div style="font-size:40px;margin-bottom:1rem">✅</div>
-      <div style="font-size:16px;font-weight:600;color:#1a1033;margin-bottom:.5rem">เลือกบูธเรียบร้อยแล้ว</div>
-      <div style="font-size:13px;color:#8b80b3;margin-bottom:.5rem">บูธ <span id="vm-booked-id" style="font-weight:600;color:#7c3aed"></span></div>
-      <div style="font-size:12px;color:#d97706" id="vm-booked-timer"></div>
-      <div style="font-size:12px;color:#8b80b3;margin-top:1rem">กรุณาโอนเงินค่าบูธภายในเวลาที่กำหนด<br>แล้วแจ้งหลักฐานการโอนให้เจ้าหน้าที่</div>
+    <!-- สรุปยอด (ระหว่างเลือก) -->
+    <div id="vm-cart" style="display:none;position:sticky;bottom:0;background:#fff;border-top:1.5px solid #e8e4ff;padding:.75rem 0;margin-top:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+        <div style="font-size:12px;color:#8b80b3">บูธที่เลือก: <span id="vm-cart-count" style="font-weight:600;color:#7c3aed">0</span> บูธ</div>
+        <div style="font-size:14px;font-weight:600;color:#1a1033">รวม <span id="vm-cart-total" style="color:#7c3aed">0</span> ฿</div>
+      </div>
+      <div id="vm-cart-items" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.75rem"></div>
+      <button id="vm-confirm-cart-btn" onclick="vmConfirmCart()" style="width:100%;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;font-family:Prompt,sans-serif">ยืนยันการเลือกบูธ →</button>
+    </div>
+
+    <div id="vm-booked" style="display:none;padding:1.5rem 0">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:36px;margin-bottom:.5rem">✅</div>
+        <div style="font-size:16px;font-weight:600;color:#1a1033">เลือกบูธเรียบร้อยแล้ว</div>
+        <div style="font-size:12px;color:#d97706;margin-top:.25rem" id="vm-booked-timer"></div>
+      </div>
+
+      <!-- สรุปบูธ -->
+      <div style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:600;color:#7c3aed;margin-bottom:.75rem">บูธที่จอง</div>
+        <div id="vm-booked-list"></div>
+        <div style="border-top:1px solid #e8e4ff;margin-top:.75rem;padding-top:.75rem;display:flex;justify-content:space-between">
+          <span style="font-size:13px;color:#8b80b3">ยอดรวม</span>
+          <span style="font-size:15px;font-weight:600;color:#7c3aed" id="vm-booked-total"></span>
+        </div>
+      </div>
+
+      <!-- บัญชีโอนเงิน -->
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:600;color:#d97706;margin-bottom:.5rem">โอนเงินค่าบูธภายในเวลาที่กำหนด</div>
+        <div style="font-size:13px;color:#1a1033;font-weight:500">ธนาคารกรุงไทย</div>
+        <div style="font-size:20px;font-weight:600;color:#1a1033;letter-spacing:.05em;margin:.25rem 0">521-3073433</div>
+        <div style="font-size:12px;color:#8b80b3">ชื่อบัญชี: สมาคมนักศึกษาเก่ามหาวิทยาลัยเชียงใหม่</div>
+      </div>
+
+      <!-- ปุ่ม LINE -->
+      <a href="https://lin.ee/XaBLZsn" target="_blank"
+        style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#06C755;color:#fff;border:none;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:Prompt,sans-serif;box-sizing:border-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.07 1.67 5.77 4.24 7.5L5.5 22l3.75-1.97C10.27 20.65 11.12 21 12 21c5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
+        ส่งหลักฐานการโอนทาง LINE
+      </a>
+      <div style="font-size:11px;color:#8b80b3;text-align:center;margin-top:.5rem">กดเพื่อเปิด LINE Official ของสมาคม</div>
     </div>
     <div id="vm-error" style="display:none;text-align:center;padding:2rem">
       <div style="font-size:40px;margin-bottom:1rem">⚠️</div>
@@ -394,7 +430,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbzIQrTeHJl4ubGCLLydIJbC3AFkzDSxqLm7XC1iXI3qAEWlYQLa7QTKZ4k_0BESDvsK4Q/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -873,8 +909,9 @@ function toast(msg, type) {
 }
 
 // ── VENDOR MODE ───────────────────────────────────────────────
-let vendorToken = null;
-let vendorData  = null;
+let vendorToken   = null;
+let vendorData    = null;
+let vmCart        = []; // [{booth_id, price, type}]
 
 async function initVendorMode(token) {
   vendorToken = token;
@@ -886,14 +923,19 @@ async function initVendorMode(token) {
     vendorData = await gasGet('getVendorByToken', { token });
 
     if (vendorData.already_booked) {
-      showVmBooked(vendorData.already_booked);
+      // โหลดข้อมูลบูธที่จองไว้แล้วเพื่อแสดงสรุป
+      booths = await gasGet('getBooths');
+      const bookedBooths = booths.filter(b =>
+        vendorData.already_booked.includes(b.booth_id) ||
+        b.booth_id === vendorData.already_booked
+      );
+      showVmBooked(bookedBooths);
       return;
     }
 
     document.getElementById('vm-brand').textContent = vendorData.brand || vendorData.full_name;
     document.getElementById('vm-name').textContent  = 'คุณ ' + vendorData.full_name;
 
-    // โหลดบูธ
     booths = await gasGet('getBooths');
     renderVmFloor();
 
@@ -941,32 +983,83 @@ function renderVmFloor() {
 }
 
 function vmBoothEl(id) {
-  const b   = booths.find(x => x.booth_id === id);
+  const b       = booths.find(x => x.booth_id === id);
   if (!b) return `<div class="booth b-blk" style="opacity:.3">${id}</div>`;
-  const avail = b.status === 'AVAILABLE';
-  const cls   = avail ? 'b-av' : 'b-resv';
-  const cur   = avail ? 'cursor:pointer' : 'cursor:not-allowed;opacity:.5';
-  return `<div class="booth ${cls}" style="${cur}" onclick="${avail ? `vmClickBooth('${id}')` : ''}"
-    title="${avail ? 'คลิกเพื่อเลือกบูธ' : STATUS_LABEL[b.status]}">${id}</div>`;
+  const inCart  = vmCart.some(x => x.booth_id === id);
+  const avail   = b.status === 'AVAILABLE';
+  const cls     = inCart ? 'b-resv' : avail ? 'b-av' : 'b-blk';
+  const opacity = !avail && !inCart ? 'opacity:.45;' : '';
+  const cur     = avail || inCart ? 'cursor:pointer' : 'cursor:not-allowed';
+  const ring    = inCart ? 'box-shadow:0 0 0 2.5px #7c3aed;' : '';
+  return `<div class="booth ${cls}" style="${cur};${opacity}${ring}" onclick="vmClickBooth('${id}')"
+    title="${inCart ? 'คลิกเพื่อยกเลิก' : avail ? 'คลิกเพื่อเลือก' : STATUS_LABEL[b.status]}">${id}${inCart ? '<div class="booth-timer">✓</div>' : ''}</div>`;
 }
 
 function vmClickBooth(id) {
-  const b = booths.find(x => x.booth_id === id);
-  if (!b || b.status !== 'AVAILABLE') return;
-  document.getElementById('vm-confirm-id').textContent   = id;
-  document.getElementById('vm-confirm-body').textContent =
-    `ราคา ${Number(b.price).toLocaleString()} ฿ · ${b.type === 'corner' ? 'บูธหัวมุม' : b.type === 'sponsor' ? 'Sponsor' : 'บูธปกติ'}`;
-  document.getElementById('vm-confirm-overlay').classList.add('open');
-  document.getElementById('vm-confirm-ok').onclick = () => vmConfirmBooth(id);
+  const b      = booths.find(x => x.booth_id === id);
+  if (!b) return;
+  const inCart = vmCart.some(x => x.booth_id === id);
+
+  if (inCart) {
+    // ยกเลิกออกจาก cart
+    vmCart = vmCart.filter(x => x.booth_id !== id);
+    renderVmFloor();
+    updateVmCart();
+    return;
+  }
+
+  if (b.status !== 'AVAILABLE') return;
+
+  // เพิ่มเข้า cart ทันที ไม่ต้อง confirm ทีละบูธ
+  vmCart.push({ booth_id: id, price: Number(b.price), type: b.type });
+  renderVmFloor();
+  updateVmCart();
 }
 
-async function vmConfirmBooth(boothId) {
+function updateVmCart() {
+  const cart    = document.getElementById('vm-cart');
+  const count   = document.getElementById('vm-cart-count');
+  const total   = document.getElementById('vm-cart-total');
+  const items   = document.getElementById('vm-cart-items');
+
+  if (vmCart.length === 0) {
+    cart.style.display = 'none';
+    return;
+  }
+
+  cart.style.display = 'block';
+  count.textContent  = vmCart.length;
+  total.textContent  = vmCart.reduce((s, x) => s + x.price, 0).toLocaleString();
+  items.innerHTML    = vmCart.map(x =>
+    `<span style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:99px;padding:2px 10px;font-size:11px;color:#7c3aed;font-weight:500">${x.booth_id}</span>`
+  ).join('');
+}
+
+async function vmConfirmCart() {
+  if (vmCart.length === 0) return;
+  const ids   = vmCart.map(x => x.booth_id).join(', ');
+  const total = vmCart.reduce((s, x) => s + x.price, 0).toLocaleString();
+
+  document.getElementById('vm-confirm-id').textContent   = ids;
+  document.getElementById('vm-confirm-body').textContent =
+    `${vmCart.length} บูธ · รวม ${total} ฿`;
+  document.getElementById('vm-confirm-overlay').classList.add('open');
+  document.getElementById('vm-confirm-ok').onclick = () => vmSubmitCart();
+}
+
+async function vmSubmitCart() {
   document.getElementById('vm-confirm-overlay').classList.remove('open');
   document.getElementById('vm-loading').style.display = 'block';
   document.getElementById('vm-content').style.display = 'none';
+  document.getElementById('vm-cart').style.display    = 'none';
+
   try {
-    const result = await gasGet('selectBoothByVendor', { token: vendorToken, booth_id: boothId });
-    showVmBooked(result.booth_id, result.expire_at);
+    const boothIds = vmCart.map(x => x.booth_id);
+    await gasGet('selectBoothByVendor', {
+      token:     vendorToken,
+      booth_ids: boothIds.join(','),
+    });
+    showVmBooked(vmCart);
   } catch (err) {
     document.getElementById('vm-loading').style.display = 'none';
     document.getElementById('vm-content').style.display = 'block';
@@ -974,15 +1067,23 @@ async function vmConfirmBooth(boothId) {
   }
 }
 
-function showVmBooked(boothId, expireAt) {
+function showVmBooked(cartItems) {
   document.getElementById('vm-loading').style.display = 'none';
   document.getElementById('vm-content').style.display = 'none';
   document.getElementById('vm-booked').style.display  = 'block';
-  document.getElementById('vm-booked-id').textContent = boothId;
-  if (expireAt) {
-    document.getElementById('vm-booked-timer').textContent =
-      'กรุณาโอนเงินภายใน ' + fmtRemaining(expireAt);
-  }
+
+  const expireAt = new Date(Date.now() + 48 * 3600000);
+  document.getElementById('vm-booked-timer').textContent =
+    'กรุณาโอนเงินภายใน ' + fmtRemaining(expireAt.toISOString());
+
+  const total = cartItems.reduce((s, x) => s + (Number(x.price) || 0), 0);
+  document.getElementById('vm-booked-total').textContent = total.toLocaleString() + ' ฿';
+  document.getElementById('vm-booked-list').innerHTML = cartItems.map(x =>
+    `<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid #e8e4ff">
+      <span style="font-weight:500;color:#1a1033">บูธ ${x.booth_id}</span>
+      <span style="color:#8b80b3">${Number(x.price).toLocaleString()} ฿</span>
+    </div>`
+  ).join('');
 }
 
 // ── ENTRY POINT ───────────────────────────────────────────────
