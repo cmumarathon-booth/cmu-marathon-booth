@@ -306,7 +306,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbxvXikv2kdTSfoucOX9VbzE0OybpVQ9ysuC_rOFoeUy6q80gn5z6qwEl0pBm_Of7pCG6g/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycby-RRcICtNm2tMFO2jEOJ5FTAAq_Rk9_P-7sbQtSi3msCSxD99R4cngCMaRia8mNt6cxQ/exec';
 const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -634,26 +634,31 @@ function startLogin() {
   if (typeof google === 'undefined') {
     toast('กำลังโหลด Google Sign-In...', 'err'); return;
   }
-  const client = google.accounts.oauth2.initTokenClient({
+  google.accounts.id.initialize({
     client_id: CLIENT_ID,
-    scope: 'openid email profile',
-    callback: async (resp) => {
-      if (resp.error) { toast('Login ล้มเหลว', 'err'); return; }
-      try {
-        // แลก access token เป็น id_token ผ่าน userinfo
-        const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: 'Bearer ' + resp.access_token }
-        }).then(r => r.json());
-        const data = await gasPost({ action: 'login', id_token: resp.access_token, email: info.email });
-        adminToken = data.token;
-        localStorage.setItem('admin_token', adminToken);
-        setAdminMode(true, info.email);
-        toast('เข้าสู่ระบบสำเร็จ: ' + info.email, 'ok');
-        loadQueue();
-      } catch (e) { toast('ไม่มีสิทธิ์ Admin: ' + e.message, 'err'); }
+    callback: handleCredentialResponse,
+    ux_mode: 'popup',
+  });
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      google.accounts.id.renderButton(
+        document.getElementById('login-btn'),
+        { theme: 'outline', size: 'small', text: 'signin' }
+      );
     }
   });
-  client.requestAccessToken();
+}
+
+async function handleCredentialResponse(response) {
+  try {
+    const data = await gasPost({ action: 'login', id_token: response.credential });
+    adminToken = data.token;
+    localStorage.setItem('admin_token', adminToken);
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    setAdminMode(true, payload.email);
+    toast('เข้าสู่ระบบสำเร็จ: ' + payload.email, 'ok');
+    loadQueue();
+  } catch (e) { toast('ไม่มีสิทธิ์ Admin: ' + e.message, 'err'); }
 }
 
 function verifySession() {
