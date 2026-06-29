@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMU Marathon EXPO — ผังบูธจัดจำหน่ายสินค้า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ── RESET & BASE ── */
@@ -24,7 +27,6 @@
   --blk:      #94a3b8; --blk-bg:  #f8fafc;
   --radius:   10px;
 }
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap');
 body { background: var(--bg); color: var(--text); font-family: 'Prompt', 'IBM Plex Sans Thai', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
 a { color: var(--accent); text-decoration: none; }
 
@@ -59,6 +61,9 @@ a { color: var(--accent); text-decoration: none; }
 
 /* ── FLOOR PLAN ── */
 .floor-outer { background: #faf9ff; border: 1.5px solid var(--border); border-radius: 16px; padding: 1.25rem; overflow-x: auto; }
+.floor-outer::-webkit-scrollbar { height: 4px; } .floor-outer::-webkit-scrollbar-track { background: transparent; } .floor-outer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+.floor-scroll-hint { display: none; font-size: 11px; color: var(--muted); text-align: center; padding: .4rem 0 0; }
+@media (max-width: 600px) { .floor-scroll-hint { display: block; } }
 .floor { display: flex; flex-direction: column; gap: 10px; min-width: 540px; }
 .zone-row { display: flex; gap: 8px; align-items: flex-start; justify-content: flex-end; }
 .zone-col  { display: flex; flex-direction: column; gap: 4px; }
@@ -76,7 +81,7 @@ a { color: var(--accent); text-decoration: none; }
 .b-pend { background: var(--pend-bg); border-color: var(--pend); color: var(--pend); }
 .b-resv { background: var(--resv-bg); border-color: var(--resv); color: var(--resv); }
 .b-spon { background: var(--spon-bg); border-color: var(--spon); color: var(--spon); }
-.b-blk  { background: var(--blk-bg);  border-color: var(--blk);  color: var(--blk);  }
+.b-blk  { background: var(--blk-bg);  border-color: var(--blk);  color: var(--blk); cursor: not-allowed; opacity: .6; }
 
 .blocker { background: #f59e0b33; border: 1.5px solid #f59e0b66; border-radius: 4px; width: 8px; align-self: stretch; }
 .area-box { background: #f8f7ff; border: 1.5px dashed #c4b8ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); text-align: center; padding: .5rem; flex: 1; min-height: 80px; }
@@ -104,11 +109,18 @@ a { color: var(--accent); text-decoration: none; }
 /* ── ADMIN ACTIONS ── */
 .admin-section { border-top: 1px solid var(--border); padding-top: .75rem; margin-top: .5rem; display: none; }
 .section-label { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: .5rem; letter-spacing: .05em; }
+.collapsible-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: .4rem 0; border-top: 1px solid var(--border); margin-top: .5rem; }
+.collapsible-header:first-of-type { border-top: none; margin-top: 0; }
+.collapsible-title { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: .05em; }
+.collapsible-icon { font-size: 12px; color: var(--muted); transition: transform .2s; }
+.collapsible-icon.open { transform: rotate(180deg); }
+.collapsible-body { display: none; padding-top: .5rem; }
+.collapsible-body.open { display: block; }
 .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .act-btn { padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 11px; cursor: pointer; text-align: center; width: 100%; }
 .act-btn:hover { border-color: var(--accent); color: var(--accent); }
 .act-btn.danger { border-color: #ef444488; color: #ef4444; }
-.act-btn.danger:hover { background: #1f0a0a; }
+.act-btn.danger:hover { background: #fff5f5; }
 .act-btn.confirm { border-color: var(--av); color: var(--av); grid-column: span 2; border-radius: 99px; font-weight: 500; }
 .act-btn.confirm:hover { background: var(--av-bg); }
 .field-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: .5rem; }
@@ -117,7 +129,9 @@ a { color: var(--accent); text-decoration: none; }
 .field-input:focus { outline: none; border-color: var(--accent); background: #fff; }
 .field-input::placeholder { color: var(--muted); }
 .save-btn { width: 100%; padding: 8px; background: var(--accent); color: #fff; border: none; border-radius: 99px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: .25rem; letter-spacing: .01em; transition: opacity .15s; }
-.save-btn:hover { opacity: .88; }
+.save-btn:hover:not(:disabled) { opacity: .88; }
+.save-btn:disabled { opacity: .5; cursor: not-allowed; }
+.act-btn:disabled { opacity: .4; cursor: not-allowed; }
 
 /* ── QUEUE ── */
 .queue-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
@@ -137,6 +151,12 @@ a { color: var(--accent); text-decoration: none; }
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
 .overlay.open { display: flex; }
 .modal { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: .75rem; }
+.bottom-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 150; }
+.bottom-sheet-overlay.open { display: block; }
+.bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; border-top: 1.5px solid var(--border); padding: 1rem 1.25rem 2rem; z-index: 151; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform .25s cubic-bezier(.32,.72,0,1); }
+.bottom-sheet.open { transform: translateY(0); }
+.bottom-sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto .75rem; }
+@media (min-width: 901px) { .bottom-sheet-overlay, .bottom-sheet { display: none !important; } }
 .modal-title { font-size: 14px; font-weight: 600; }
 .modal-body  { font-size: 12px; color: var(--muted); }
 .modal-btns  { display: flex; gap: 8px; }
@@ -201,6 +221,7 @@ a { color: var(--accent); text-decoration: none; }
           <div class="loading"><div class="spin"></div>กำลังโหลดผังบูธ...</div>
         </div>
       </div>
+      <div class="floor-scroll-hint">← เลื่อนดูผังบูธทั้งหมด →</div>
     </div>
 
     <!-- SIDE PANEL -->
@@ -253,23 +274,30 @@ a { color: var(--accent); text-decoration: none; }
             <button class="act-btn confirm" onclick="doConfirmPayment()">✓ ยืนยันโอนเงิน</button>
           </div>
 
-          <div style="margin-top:.75rem">
-            <div class="section-label">ข้อมูลสาธารณะ</div>
+          <div class="collapsible-header" onclick="toggleSection('sec-public')">
+            <span class="collapsible-title">ข้อมูลสาธารณะ</span>
+            <span class="collapsible-icon open" id="icon-sec-public">▾</span>
+          </div>
+          <div class="collapsible-body open" id="sec-public">
             <div class="field-group"><div class="field-label">ชื่อร้าน / แบรนด์</div><input class="field-input" id="f-brand" placeholder="เช่น ร้านกาแฟดอยช้าง"></div>
             <div class="field-group"><div class="field-label">รายละเอียดสินค้า/บริการ</div><input class="field-input" id="f-desc" placeholder="เช่น กาแฟ เครื่องดื่ม ขนม"></div>
           </div>
 
-          <div style="margin-top:.75rem">
-            <div class="section-label">🔒 ข้อมูลส่วนตัว</div>
+          <div class="collapsible-header" onclick="toggleSection('sec-private')">
+            <span class="collapsible-title">🔒 ข้อมูลส่วนตัว</span>
+            <span class="collapsible-icon" id="icon-sec-private">▾</span>
+          </div>
+          <div class="collapsible-body" id="sec-private">
             <div class="field-group"><div class="field-label">ชื่อ-นามสกุล</div><input class="field-input" id="f-name" placeholder="ผู้ติดต่อ"></div>
             <div class="field-group"><div class="field-label">เบอร์โทรศัพท์</div><input class="field-input" id="f-phone" placeholder="08x-xxx-xxxx"></div>
             <div class="field-group"><div class="field-label">อีเมล</div><input class="field-input" id="f-email" placeholder="email@example.com"></div>
             <div class="field-group"><div class="field-label">ที่อยู่</div><input class="field-input" id="f-addr" placeholder="ที่อยู่จัดส่งใบเสร็จ"></div>
             <div class="field-group"><div class="field-label">เลขผู้เสียภาษี (ถ้ามี)</div><input class="field-input" id="f-tax" placeholder="13 หลัก"></div>
             <div class="field-group"><div class="field-label">หมายเหตุ Admin</div><input class="field-input" id="f-note" placeholder="บันทึกภายใน"></div>
-            <button class="save-btn" onclick="doSaveVendor()">บันทึกข้อมูล</button>
-            <button class="act-btn danger" onclick="doCancelBooth()" style="margin-top:6px">ยกเลิกการจอง</button>
           </div>
+
+          <button class="save-btn" id="save-btn" onclick="doSaveVendor()" style="margin-top:.75rem">บันทึกข้อมูล</button>
+          <button class="act-btn danger" onclick="doCancelBooth()" style="margin-top:6px">ยกเลิกการจอง</button>
         </div>
 
         <button class="act-btn" onclick="closePanel()" style="margin-top:.75rem;width:100%;text-align:center">ปิด</button>
@@ -289,6 +317,13 @@ a { color: var(--accent); text-decoration: none; }
 
     </div>
   </div>
+</div>
+
+<!-- BOTTOM SHEET (mobile only) -->
+<div class="bottom-sheet-overlay" id="bs-overlay" onclick="closeMobilePanel()"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+  <div class="bottom-sheet-handle"></div>
+  <div id="bs-content"></div>
 </div>
 
 <!-- CONFIRM OVERLAY -->
@@ -465,9 +500,15 @@ function renderFloor() {
 
 // ── PANEL ────────────────────────────────────────────────────
 function clickBooth(id) {
+  const b = booths.find(x => x.booth_id === id);
+  if (b && b.status === 'BLOCKED' && !isAdmin) return;
   selectedId = id;
   renderFloor();
-  openPanel(id);
+  if (window.innerWidth < 901) {
+    openMobilePanel(id);
+  } else {
+    openPanel(id);
+  }
 }
 
 function openPanel(id) {
@@ -548,11 +589,13 @@ async function doUpdateStatus(status) {
   if (!selectedId) return;
   const label = STATUS_LABEL[status];
   confirm2(`เปลี่ยนสถานะบูธ ${selectedId} เป็น "${label}"?`, '', async () => {
+    setActionBtnsLoading(true);
     try {
       await gasPost({ action: 'updateStatus', booth_id: selectedId, status });
       toast('เปลี่ยนสถานะเรียบร้อย', 'ok');
       await loadBooths(); await loadDashboard(); openPanel(selectedId);
     } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+    finally { setActionBtnsLoading(false); }
   });
 }
 
@@ -568,11 +611,13 @@ async function doSaveVendor() {
     tax_id:      document.getElementById('f-tax').value,
     note:        document.getElementById('f-note').value,
   };
+  setLoading('save-btn', true);
   try {
     await gasPost({ action: 'saveVendor', booth_id: selectedId, vendor });
     toast('บันทึกข้อมูลเรียบร้อย', 'ok');
     await loadBooths(); openPanel(selectedId);
   } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+  finally { setLoading('save-btn', false); }
 }
 
 async function doCancelBooth() {
@@ -589,11 +634,13 @@ async function doCancelBooth() {
 async function doConfirmPayment() {
   if (!selectedId) return;
   confirm2(`ยืนยันการโอนเงินบูธ ${selectedId}?`, 'สถานะจะเปลี่ยนเป็น "จองแล้ว" และส่ง Email ยืนยันให้ร้านค้า', async () => {
+    setActionBtnsLoading(true);
     try {
       await gasPost({ action: 'confirmPayment', booth_id: selectedId });
       toast('ยืนยันการโอนเงินเรียบร้อย', 'ok');
       await loadBooths(); await loadDashboard(); openPanel(selectedId);
     } catch (e) { toast('เกิดข้อผิดพลาด: ' + e.message, 'err'); }
+    finally { setActionBtnsLoading(false); }
   });
 }
 
@@ -700,6 +747,57 @@ function fmtRemaining(isoStr) {
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   return h + 'h ' + m + 'm';
+}
+
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId) || document.querySelector(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  if (loading) btn.dataset.orig = btn.textContent;
+  btn.textContent = loading ? 'กำลังบันทึก...' : (btn.dataset.orig || btn.textContent);
+}
+
+function setActionBtnsLoading(loading) {
+  document.querySelectorAll('.act-btn, .save-btn').forEach(b => b.disabled = loading);
+}
+
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  const icon = document.getElementById('icon-' + id);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (icon) icon.classList.toggle('open', !isOpen);
+}
+
+function openMobilePanel(id) {
+  if (window.innerWidth >= 901) return;
+  const b = booths.find(x => x.booth_id === id);
+  if (!b) return;
+  const bs = document.getElementById('bottom-sheet');
+  const bso = document.getElementById('bs-overlay');
+  const content = document.getElementById('bs-content');
+  const remaining = b.expire_at ? fmtRemaining(b.expire_at) : null;
+  content.innerHTML = \`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+      <div>
+        <div style="font-size:15px;font-weight:600">บูธ \${id}</div>
+        <div style="font-size:11px;color:var(--muted)">\${b.type==='corner'?'บูธหัวมุม':b.type==='sponsor'?'Sponsor':'บูธปกติ'} · \${Number(b.price).toLocaleString()} ฿</div>
+      </div>
+      <span class="badge \${BADGE_CLS[b.status]||''}">\${STATUS_LABEL[b.status]}</span>
+    </div>
+    <div class="info-row"><span class="info-label">ชื่อร้าน</span><span class="info-val">\${b.brand||'(ว่าง)'}</span></div>
+    <div class="info-row"><span class="info-label">รายละเอียด</span><span class="info-val">\${b.description||'—'}</span></div>
+    \${remaining ? \`<div class="info-row"><span class="info-label">หมดเวลา</span><span class="info-val countdown">\${remaining}</span></div>\` : ''}
+    <button onclick="closeMobilePanel()" style="width:100%;margin-top:1rem;padding:10px;border-radius:99px;border:1.5px solid var(--border);background:transparent;font-size:13px;cursor:pointer;font-family:Prompt,sans-serif">ปิด</button>
+  \`;
+  bs.classList.add('open');
+  bso.classList.add('open');
+}
+
+function closeMobilePanel() {
+  document.getElementById('bottom-sheet').classList.remove('open');
+  document.getElementById('bs-overlay').classList.remove('open');
 }
 
 function confirm2(title, body, cb) {
