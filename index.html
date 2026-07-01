@@ -447,7 +447,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwc-TfIL85nN-j_gz4bVb5Ufmp7d_46__jkboDrtXPzFN7FHZuOhcqb5Q9ZBYeAdSzgAg/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -1083,10 +1083,46 @@ async function vmSubmitCart() {
     showVmBooked(bookedItems);
   } catch (err) {
     document.getElementById('processing-overlay').classList.remove('open');
+
+    // รีโหลดบูธใหม่ก่อน เพื่อให้ผังอัปเดต
+    booths = await gasGet('getBooths');
+
+    // ลบบูธที่ไม่ว่างแล้วออกจาก cart
+    vmCart = vmCart.filter(x => {
+      const b = booths.find(b => b.booth_id === x.booth_id);
+      return b && b.status === 'AVAILABLE';
+    });
+
+    renderVmFloor();
+    updateVmCart();
+
     document.getElementById('vm-content').style.display = 'block';
-    document.getElementById('vm-cart').style.display    = 'block';
-    toast('เกิดข้อผิดพลาด: ' + err.message, 'err');
+
+    // แสดง error popup ชัดเจน
+    showVmError(err.message);
   }
+}
+
+function showVmError(msg) {
+  // สร้าง popup แจ้ง error กลางจอ
+  const existing = document.getElementById('vm-err-popup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'vm-err-popup';
+  popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:flex;align-items:center;justify-content:center;padding:1rem';
+  popup.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:1.75rem 1.5rem;max-width:300px;width:100%;text-align:center;display:flex;flex-direction:column;gap:.75rem">
+      <div style="font-size:36px">⚠️</div>
+      <div style="font-size:15px;font-weight:600;color:#1a1033">จองไม่สำเร็จ</div>
+      <div style="font-size:13px;color:#8b80b3;line-height:1.6">${msg}</div>
+      <div style="font-size:12px;color:#8b80b3">บูธที่ไม่ว่างแล้วถูกนำออกจากรายการ<br>กรุณาเลือกบูธอื่นแทน</div>
+      <button onclick="document.getElementById('vm-err-popup').remove()"
+        style="margin-top:.25rem;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;font-family:Prompt,sans-serif">
+        เลือกบูธใหม่
+      </button>
+    </div>`;
+  document.body.appendChild(popup);
 }
 
 function showVmBooked(cartItems) {
