@@ -410,7 +410,7 @@ a { color: var(--accent); text-decoration: none; }
       <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
         <div style="font-size:11px;font-weight:600;color:#d97706;margin-bottom:.5rem">โอนเงินค่าบูธภายในเวลาที่กำหนด</div>
         <div style="font-size:13px;color:#1a1033;font-weight:500">ธนาคารกรุงไทย</div>
-        <div style="font-size:20px;font-weight:600;color:#1a1033;letter-spacing:.05em;margin:.25rem 0">521-307343-3</div>
+        <div style="font-size:20px;font-weight:600;color:#1a1033;letter-spacing:.05em;margin:.25rem 0">521-3073433</div>
         <div style="font-size:12px;color:#8b80b3">ชื่อบัญชี: สมาคมนักศึกษาเก่ามหาวิทยาลัยเชียงใหม่</div>
       </div>
 
@@ -447,7 +447,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbxM5siMt3B1_RVinsHbtgh7q-w-dvtWTRd1bKaalPgFp3HooeaEgZdUD93VdAU2K85EWA/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -939,13 +939,15 @@ async function initVendorMode(token) {
   try {
     vendorData = await gasGet('getVendorByToken', { token });
 
-    if (vendorData.already_booked) {
+    if (vendorData.already_booked && vendorData.already_booked.length > 0) {
       // โหลดข้อมูลบูธที่จองไว้แล้วเพื่อแสดงสรุป
       booths = await gasGet('getBooths');
-      const bookedBooths = booths.filter(b =>
-        vendorData.already_booked.includes(b.booth_id) ||
-        b.booth_id === vendorData.already_booked
-      );
+      const bookedIds = Array.isArray(vendorData.already_booked)
+        ? vendorData.already_booked
+        : [vendorData.already_booked];
+      const bookedBooths = booths
+        .filter(b => bookedIds.includes(b.booth_id))
+        .map(b => ({ booth_id: b.booth_id, price: b.price, type: b.type }));
       showVmBooked(bookedBooths);
       return;
     }
