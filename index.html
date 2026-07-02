@@ -213,12 +213,17 @@ a { color: var(--accent); text-decoration: none; }
   </div>
 
   <!-- LEGEND -->
-  <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:var(--av)"></div>ว่าง</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--pend)"></div>รอโอนเงิน</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--resv)"></div>จองแล้ว</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--spon)"></div>Sponsor</div>
-    <div class="leg"><div class="leg-dot" style="background:var(--blk)"></div>ปิด</div>
+  <div class="legend" style="justify-content:space-between;align-items:center">
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem">
+      <div class="leg"><div class="leg-dot" style="background:var(--av)"></div>ว่าง</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--pend)"></div>รอโอนเงิน</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--resv)"></div>จองแล้ว</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--spon)"></div>Sponsor</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--blk)"></div>ปิด</div>
+    </div>
+    <button onclick="openFloorplanLightbox()" style="display:flex;align-items:center;gap:5px;padding:5px 14px;background:#fff;border:1.5px solid #ddd6fe;border-radius:99px;color:#7c3aed;font-size:11px;font-weight:500;cursor:pointer;font-family:Prompt,sans-serif;white-space:nowrap">
+      🖼️ ดูผังบูธจริง
+    </button>
   </div>
 
   <div class="main-grid">
@@ -469,7 +474,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbztFkt63Om3LAC-0tSBJ3RtZLQylpCjyXCkAb7V5snAm0FuxvnHz3Y4A79BsTwnnvV-kQ/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
