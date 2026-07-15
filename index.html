@@ -474,7 +474,7 @@ a { color: var(--accent); text-decoration: none; }
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const GAS_URL   = 'https://script.google.com/macros/s/AKfycbztFkt63Om3LAC-0tSBJ3RtZLQylpCjyXCkAb7V5snAm0FuxvnHz3Y4A79BsTwnnvV-kQ/exec';
+const GAS_URL   = 'https://script.google.com/macros/s/AKfycbwvC6PcLR_FZZOdZFgfSik_gscoAiY54f4qVYH-kuRMBDb2XMkpfr76AgA6OMrsBXmM/exec';
 const CLIENT_ID = '500666390436-ac1o4jdd8n6j41j0t684e421asj1m17e.apps.googleusercontent.com'; // ← ใส่ OAuth Client ID ตอน Deploy
 
 // ── STATE ────────────────────────────────────────────────────
@@ -965,26 +965,18 @@ async function initVendorMode(token) {
 
   try {
     vendorData = await gasGet('getVendorByToken', { token });
-
-    if (vendorData.already_booked && vendorData.already_booked.length > 0) {
-      // โหลดข้อมูลบูธที่จองไว้แล้วเพื่อแสดงสรุป
-      booths = await gasGet('getBooths');
-      const bookedIds = Array.isArray(vendorData.already_booked)
-        ? vendorData.already_booked
-        : [vendorData.already_booked];
-      const bookedBooths = booths
-        .filter(b => bookedIds.includes(b.booth_id))
-        .map(b => ({ booth_id: b.booth_id, price: b.price, type: b.type }));
-      showVmBooked(bookedBooths);
-      return;
-    }
+    booths = await gasGet('getBooths');
 
     document.getElementById('vm-brand').textContent = vendorData.brand || vendorData.full_name;
     document.getElementById('vm-name').textContent  = 'คุณ ' + vendorData.full_name;
 
-    booths = await gasGet('getBooths');
-    renderVmFloor();
+    if (vendorData.already_booked && vendorData.already_booked.length > 0) {
+      // เคยจองไปแล้ว — แสดงสรุปพร้อมปุ่มจองเพิ่ม แทนการบล็อก
+      showVmBookedSummary();
+      return;
+    }
 
+    renderVmFloor();
     document.getElementById('vm-loading').style.display = 'none';
     document.getElementById('vm-content').style.display = 'block';
   } catch (err) {
@@ -992,6 +984,25 @@ async function initVendorMode(token) {
     document.getElementById('vm-error').style.display    = 'block';
     document.getElementById('vm-error-msg').textContent  = err.message;
   }
+}
+
+// ดึงบูธทั้งหมดที่ vendor นี้จองไว้ (สะสมทุกรอบ) แล้วแสดงสรุป
+async function showVmBookedSummary() {
+  booths = await gasGet('getBooths');
+  const myBooths = booths
+    .filter(b => b.vendor_id === vendorData.vendor_id &&
+      ['PENDING_PAYMENT', 'RESERVED'].includes(b.status))
+    .map(b => ({ booth_id: b.booth_id, price: b.price, type: b.type }));
+  showVmBooked(myBooths);
+}
+
+// กลับไปหน้าเลือกบูธเพื่อจองเพิ่ม
+function vmAddMore() {
+  document.getElementById('vm-booked').style.display  = 'none';
+  document.getElementById('vm-content').style.display = 'block';
+  vmCart = [];
+  renderVmFloor();
+  updateVmCart();
 }
 
 function renderVmFloor() {
@@ -1107,9 +1118,8 @@ async function vmSubmitCart() {
       booth_ids: boothIds.join(','),
     });
     document.getElementById('processing-overlay').classList.remove('open');
-    const bookedItems = [...vmCart]; // copy ก่อน clear
-    vmCart = [];                     // clear cart
-    showVmBooked(bookedItems);
+    vmCart = []; // clear cart
+    await showVmBookedSummary(); // แสดงสรุปรวมทุกบูธ (เก่า + ใหม่)
   } catch (err) {
     document.getElementById('processing-overlay').classList.remove('open');
 
@@ -1171,6 +1181,17 @@ function showVmBooked(cartItems) {
       <span style="color:#8b80b3">${Number(x.price).toLocaleString()} ฿</span>
     </div>`
   ).join('');
+
+  // เพิ่มปุ่ม "จองบูธเพิ่ม" ถ้ายังไม่มี
+  let addMoreBtn = document.getElementById('vm-add-more-btn');
+  if (!addMoreBtn) {
+    addMoreBtn = document.createElement('button');
+    addMoreBtn.id = 'vm-add-more-btn';
+    addMoreBtn.textContent = '+ จองบูธเพิ่ม';
+    addMoreBtn.style.cssText = 'width:100%;padding:10px;background:#fff;border:1.5px solid #ddd6fe;border-radius:99px;color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;margin-top:.75rem;font-family:Prompt,sans-serif';
+    addMoreBtn.onclick = vmAddMore;
+    document.getElementById('vm-booked').appendChild(addMoreBtn);
+  }
 }
 
 // ── FLOORPLAN LIGHTBOX ──────────────────────────────────────────
