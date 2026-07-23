@@ -292,7 +292,17 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 .stat::after { width:26px; height:26px; border-radius:0; border-color:rgba(21,11,43,.22); right:7px; top:7px; border-left:0; border-bottom:0; }
 .stat-num { font-size:34px; letter-spacing:-.06em; }.stat-label{text-transform:uppercase;letter-spacing:.1em}
 .legend { border-radius:0; border:1px solid var(--ink); background:#fff; padding:10px 12px; }
-.legend > button { border-radius:2px!important; border-color:var(--ink)!important; color:var(--ink)!important; }
+.floorplan-cta {
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:44px; padding:10px 18px; border:1px solid var(--ink);
+  border-radius:2px; background:var(--lime); color:var(--ink);
+  font-family:Prompt,sans-serif; font-size:12px; font-weight:600;
+  letter-spacing:.04em; white-space:nowrap; cursor:pointer;
+  box-shadow:5px 5px 0 var(--violet);
+}
+.floorplan-cta::after { content:"↗"; font-size:17px; line-height:1; }
+.floorplan-cta:hover { background:#fff; transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--violet); }
+.floorplan-cta:focus-visible { outline:3px solid var(--violet); outline-offset:3px; }
 .main-grid { grid-template-columns:minmax(0,1fr) 330px; gap:1px; background:var(--ink); border:1px solid var(--ink); }
 .floor-outer { min-height:520px; border:0; border-radius:0; box-shadow:none; background:#e9e5f0; padding:1.5rem; }
 .floor-outer::before { content:"MAP / EXHIBITION GRID          SCALE 01:100          LIVE AVAILABILITY"; color:var(--ink); border-bottom:1px solid rgba(21,11,43,.25); padding-bottom:.75rem; }
@@ -318,7 +328,7 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 .modal,.processing-box { border-radius:2px; box-shadow:12px 12px 0 var(--violet); }.modal-btns .confirm{border-radius:2px;background:var(--ink);color:var(--lime)}
 .toast { border-radius:2px; border-left:5px solid var(--lime); }
 @media(max-width:900px){.expo-hero{min-height:390px}.main-grid{grid-template-columns:1fr}.panel{position:static}.telemetry{grid-template-columns:1fr 1fr}.telemetry-item:nth-child(2){border-right:0}.motion-mark{right:-110px}.dashboard{grid-template-columns:repeat(5,1fr)}}
-@media(max-width:600px){.container{padding-left:12px;padding-right:12px}.expo-hero{margin:0 -12px;min-height:420px;padding:2rem 1.25rem}.expo-hero h1{font-size:48px;max-width:330px}.expo-hero p{max-width:83%}.expo-hero::after{display:none}.motion-mark{right:-145px;top:115px}.telemetry{margin:0 -12px 1rem;padding:0;grid-template-columns:1fr 1fr}.telemetry-item{padding:8px 10px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.main-grid{margin:0}.floor-outer::before{font-size:8px}.floor-outer{min-height:470px}.panel-card{padding:1.15rem}}
+@media(max-width:600px){.container{padding-left:12px;padding-right:12px}.expo-hero{margin:0 -12px;min-height:420px;padding:2rem 1.25rem}.expo-hero h1{font-size:48px;max-width:330px}.expo-hero p{max-width:83%}.expo-hero::after{display:none}.motion-mark{right:-145px;top:115px}.telemetry{margin:0 -12px 1rem;padding:0;grid-template-columns:1fr 1fr}.telemetry-item{padding:8px 10px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.main-grid{margin:0}.floor-outer::before{font-size:8px}.floor-outer{min-height:470px}.panel-card{padding:1.15rem}.legend{gap:10px}.floorplan-cta{width:100%;min-height:48px}}
 </style>
 </head>
 <body>
@@ -380,8 +390,8 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
       <div class="leg"><div class="leg-dot" style="background:var(--spon)"></div>Sponsor</div>
       <div class="leg"><div class="leg-dot" style="background:var(--blk)"></div>ปิด</div>
     </div>
-    <button onclick="openFloorplanLightbox()" style="display:flex;align-items:center;gap:5px;padding:5px 14px;background:#fff;border:1.5px solid #ddd6fe;border-radius:99px;color:#7c3aed;font-size:11px;font-weight:500;cursor:pointer;font-family:Prompt,sans-serif;white-space:nowrap">
-      🖼️ ดูผังบูธจริง
+    <button class="floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
+      <span aria-hidden="true">▦</span> ดูผังบูธจริง
     </button>
   </div>
 
