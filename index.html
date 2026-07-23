@@ -247,6 +247,67 @@ button:focus-visible,.booth:focus-visible,input:focus-visible { outline:3px soli
 @media (max-width:900px){ .expo-hero{min-height:210px}.motion-mark{right:-70px;opacity:.55}.panel{position:static}.main-grid{grid-template-columns:1fr} }
 @media (max-width:600px){ .topbar{padding:.75rem 1rem}.topbar-brand::before{display:none}.brand-sub{display:none}.expo-hero{border-radius:22px;padding:1.35rem;min-height:220px}.expo-hero h1{font-size:29px}.expo-hero p{font-size:12px;max-width:80%}.motion-mark{width:190px;right:-85px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.stat{padding:.9rem}.floor-outer{padding:1rem;border-radius:20px}.legend{align-items:flex-start!important}.panel-card{border-radius:18px} }
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important} }
+
+/* ── MARATHON / TACTICAL REDESIGN ── */
+:root { --ink:#150b2b; --violet:#7939e8; --violet-hot:#9b5cff; --lime:#c6ff33; --paper:#f1eef7; --signal:#ff6b1a; }
+body { background:var(--ink); color:var(--text); }
+body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,255,51,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(198,255,51,.08) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,#000,transparent 55%); }
+.topbar { color:#fff; background:rgba(21,11,43,.9); border-color:rgba(255,255,255,.12); }
+.topbar-brand::before { border-radius:3px; background:var(--lime); color:var(--ink); box-shadow:7px 7px 0 var(--violet); }
+.brand-text { color:#fff; }.brand-sub{color:#9f95b4}
+#login-btn,#logout-btn { border-radius:3px; background:transparent; border-color:var(--lime); color:var(--lime); text-transform:uppercase; letter-spacing:.08em; }
+#login-btn:hover,#logout-btn:hover { background:var(--lime); border-color:var(--lime); color:var(--ink); }
+.container { position:relative; z-index:1; max-width:1440px; background:var(--paper); padding-bottom:4rem; }
+.container::before,.container::after { content:""; position:absolute; top:0; bottom:0; width:1px; background:rgba(21,11,43,.09); pointer-events:none; }
+.container::before{left:clamp(1rem,3vw,2rem)}.container::after{right:clamp(1rem,3vw,2rem)}
+.expo-hero { min-height:430px; margin:0 calc(clamp(1rem,3vw,2rem) * -1) 0; padding:clamp(2rem,6vw,5.5rem); border-radius:0; box-shadow:none; align-items:center; isolation:isolate; background:var(--ink); }
+.expo-hero::before { opacity:1; background:linear-gradient(100deg,var(--ink) 0 49%,rgba(21,11,43,.64) 70%,var(--ink)),repeating-linear-gradient(105deg,transparent 0 22px,rgba(155,92,255,.18) 23px 24px),radial-gradient(circle at 82% 50%,var(--violet) 0 3%,transparent 3.2%),radial-gradient(circle at 82% 50%,transparent 0 15%,rgba(198,255,51,.5) 15.2% 15.6%,transparent 15.8% 23%,rgba(155,92,255,.8) 23.2% 23.6%,transparent 23.8%); }
+.expo-hero::after { content:"CMUEX // 10.26   CHIANG MAI   POSITIONING SYSTEM ONLINE"; position:absolute; right:1rem; bottom:1rem; color:rgba(255,255,255,.45); font-size:9px; letter-spacing:.18em; writing-mode:vertical-rl; }
+.expo-hero-copy { max-width:780px; }
+.eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:10px; color:var(--ink); background:var(--lime); padding:6px 10px; margin-bottom:1.15rem; letter-spacing:.14em; }
+.eyebrow::before { content:"●"; animation:signalBlink 1.4s steps(1) infinite; }
+.expo-hero h1 { max-width:830px; font-size:clamp(42px,7.2vw,100px); line-height:.86; letter-spacing:-.075em; text-transform:uppercase; }
+.expo-hero h1 span { color:transparent; -webkit-text-stroke:1.5px var(--violet-hot); }
+.expo-hero p { max-width:510px; margin-top:1.5rem; color:#bdb4ce; font-size:13px; border-left:2px solid var(--lime); padding-left:1rem; }
+.motion-mark { width:390px; height:250px; right:4vw; top:95px; opacity:.72; mix-blend-mode:screen; }
+.motion-mark i { height:24px; border-radius:0; border-width:1px; }
+@keyframes signalBlink { 50%{opacity:.2} }
+.telemetry { display:grid; grid-template-columns:1.3fr repeat(3,1fr); background:var(--lime); color:var(--ink); margin:0 calc(clamp(1rem,3vw,2rem) * -1) 1.4rem; padding:0 clamp(1rem,3vw,2rem); }
+.telemetry-item { min-height:52px; display:flex; align-items:center; gap:8px; padding:9px 14px; border-right:1px solid rgba(21,11,43,.25); font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+.telemetry-item:last-child{border-right:0}.telemetry-value{margin-left:auto;font-size:12px}.live-dot{width:7px;height:7px;background:var(--ink);border-radius:50%;box-shadow:0 0 0 4px rgba(21,11,43,.13);animation:signalBlink 1.4s steps(1) infinite}
+.dashboard { grid-template-columns:1.35fr repeat(4,1fr); gap:1px; background:var(--ink); border:1px solid var(--ink); }
+.stat { min-height:100px; border:0; border-radius:0; box-shadow:none; background:#fff; padding:1rem 1.15rem; }
+.stat:first-child { background:var(--ink); color:#fff; }.stat:first-child .stat-num{color:var(--lime)}.stat:first-child .stat-label{color:#9f95b4}
+.stat::after { width:26px; height:26px; border-radius:0; border-color:rgba(21,11,43,.22); right:7px; top:7px; border-left:0; border-bottom:0; }
+.stat-num { font-size:34px; letter-spacing:-.06em; }.stat-label{text-transform:uppercase;letter-spacing:.1em}
+.legend { border-radius:0; border:1px solid var(--ink); background:#fff; padding:10px 12px; }
+.legend > button { border-radius:2px!important; border-color:var(--ink)!important; color:var(--ink)!important; }
+.main-grid { grid-template-columns:minmax(0,1fr) 330px; gap:1px; background:var(--ink); border:1px solid var(--ink); }
+.floor-outer { min-height:520px; border:0; border-radius:0; box-shadow:none; background:#e9e5f0; padding:1.5rem; }
+.floor-outer::before { content:"MAP / EXHIBITION GRID          SCALE 01:100          LIVE AVAILABILITY"; color:var(--ink); border-bottom:1px solid rgba(21,11,43,.25); padding-bottom:.75rem; }
+.floor-outer::after { content:"N\A↑"; white-space:pre; position:absolute; right:18px; top:14px; color:var(--ink); font-size:10px; font-weight:600; line-height:1; }
+.floor { min-height:410px; background-image:linear-gradient(rgba(21,11,43,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(21,11,43,.055) 1px,transparent 1px); background-size:24px 24px; }
+.zone-label { color:var(--ink); font-weight:600; letter-spacing:.18em; }
+.booth { border-radius:2px; border-width:1px; font-weight:600; box-shadow:3px 3px 0 rgba(21,11,43,.12); }
+.booth:hover { transform:translate(-2px,-3px); box-shadow:6px 7px 0 var(--ink); z-index:3; }
+.booth.selected { background:var(--lime)!important; color:var(--ink)!important; border-color:var(--ink)!important; transform:translate(-2px,-3px); box-shadow:6px 7px 0 var(--violet); }
+.b-av{background:#dffff0}.b-pend{background:#ffe4c5}.b-resv{background:#d9c4ff}.b-spon{background:var(--lime)}.b-blk{background:#d6d2dc}
+.area-box { border-radius:0; background:rgba(255,255,255,.45); border-color:rgba(21,11,43,.35); color:var(--ink); text-transform:uppercase; letter-spacing:.1em; }
+.panel { top:78px; gap:1px; background:var(--ink); }
+.panel-card { border:0; border-radius:0; box-shadow:none; background:#fff; }
+#panel-default { min-height:220px; border-radius:0; background:var(--ink); }
+#panel-default::before { content:"NO POSITION SELECTED"; display:block; color:var(--lime); font-size:9px; letter-spacing:.14em; margin-bottom:1rem; }
+#panel-default::after { content:"+"; font-size:110px; font-weight:300; right:18px; bottom:-25px; color:var(--violet-hot); }
+#panel-booth { border-top:8px solid var(--lime); }
+.badge { border-radius:2px; text-transform:uppercase; letter-spacing:.05em; }
+.info-row { border-color:rgba(21,11,43,.12); }.info-label{text-transform:uppercase;font-size:10px;letter-spacing:.06em}
+.private-box { border-radius:0; background:#efe8ff; border-color:var(--violet); }
+.field-input { border-radius:0; border:1px solid rgba(21,11,43,.25); background:#f3f0f7; }.field-input:focus{box-shadow:4px 4px 0 var(--lime)}
+.save-btn,.act-btn.confirm { border-radius:2px; }.save-btn{background:var(--ink);color:var(--lime);text-transform:uppercase;letter-spacing:.08em}
+.modal,.processing-box { border-radius:2px; box-shadow:12px 12px 0 var(--violet); }.modal-btns .confirm{border-radius:2px;background:var(--ink);color:var(--lime)}
+.toast { border-radius:2px; border-left:5px solid var(--lime); }
+@media(max-width:900px){.expo-hero{min-height:390px}.main-grid{grid-template-columns:1fr}.panel{position:static}.telemetry{grid-template-columns:1fr 1fr}.telemetry-item:nth-child(2){border-right:0}.motion-mark{right:-110px}.dashboard{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:600px){.container{padding-left:12px;padding-right:12px}.expo-hero{margin:0 -12px;min-height:420px;padding:2rem 1.25rem}.expo-hero h1{font-size:48px;max-width:330px}.expo-hero p{max-width:83%}.expo-hero::after{display:none}.motion-mark{right:-145px;top:115px}.telemetry{margin:0 -12px 1rem;padding:0;grid-template-columns:1fr 1fr}.telemetry-item{padding:8px 10px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.main-grid{margin:0}.floor-outer::before{font-size:8px}.floor-outer{min-height:470px}.panel-card{padding:1.15rem}}
 </style>
 </head>
 <body>
@@ -271,12 +332,19 @@ button:focus-visible,.booth:focus-visible,input:focus-visible { outline:3px soli
 
   <section class="expo-hero" aria-labelledby="expo-title">
     <div class="expo-hero-copy">
-      <div class="eyebrow">10th CMU Chiang Mai Marathon · Expo</div>
-      <h1 id="expo-title">พื้นที่ของแบรนด์<br>ที่พร้อมก้าวไปข้างหน้า</h1>
-      <p>สำรวจสถานะและเลือกตำแหน่งบูธได้จากผังด้านล่าง ข้อมูลอัปเดตจากระบบแบบเรียลไทม์</p>
+      <div class="eyebrow">System online · 10th CMU Chiang Mai Marathon</div>
+      <h1 id="expo-title">Select your<br><span>position.</span></h1>
+      <p>เข้าสู่ระบบจัดสรรพื้นที่ CMU Marathon Expo สำรวจสถานะ เลือกตำแหน่ง และยืนยันบูธจากแผนผังแบบเรียลไทม์</p>
     </div>
     <div class="motion-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </section>
+
+  <div class="telemetry" aria-label="สถานะระบบ">
+    <div class="telemetry-item"><span class="live-dot"></span> Floor system <span class="telemetry-value">Online</span></div>
+    <div class="telemetry-item">Sector <span class="telemetry-value">A—D</span></div>
+    <div class="telemetry-item">Sync <span class="telemetry-value">15 sec</span></div>
+    <div class="telemetry-item">Protocol <span class="telemetry-value">CMUEX/10</span></div>
+  </div>
 
   <!-- DASHBOARD -->
   <div class="dashboard" id="dashboard">
