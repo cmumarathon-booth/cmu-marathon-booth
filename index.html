@@ -363,6 +363,19 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 .details-lightbox-title { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
 .details-close { width:38px; height:38px; border:1px solid var(--lime); border-radius:2px; background:transparent; color:var(--lime); cursor:pointer; font-size:18px; }
 .details-document { display:block; width:min(1200px,100%); height:auto; margin:0 auto 2rem; background:#fff; box-shadow:12px 12px 0 var(--violet); }
+.main-price-strip { display:grid; grid-template-columns:1.2fr repeat(3,1fr); gap:1px; margin:0 0 1rem; border:1px solid var(--ink); background:var(--ink); }
+.main-price-heading { display:flex; flex-direction:column; justify-content:center; padding:.85rem 1rem; background:var(--ink); color:#fff; }
+.main-price-heading strong { color:var(--lime); font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+.main-price-heading span { color:#9f95b4; font-size:9px; margin-top:3px; }
+.main-price-item { padding:.8rem 1rem; background:#fff; }
+.main-price-item span { display:block; color:var(--muted); font-size:9px; text-transform:uppercase; letter-spacing:.08em; }
+.main-price-item strong { display:block; color:var(--ink); font-size:19px; line-height:1.15; margin-top:3px; }
+.main-resource-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.main-resource-actions .floorplan-cta { min-width:185px; }
+.booth.booth-corner { border:2px solid var(--signal)!important; box-shadow:inset 0 0 0 2px rgba(255,107,26,.16),4px 4px 0 var(--signal)!important; }
+.booth.booth-corner::after { content:""; position:absolute; top:-2px; right:-2px; width:0; height:0; border-style:solid; border-width:0 13px 13px 0; border-color:transparent var(--signal) transparent transparent; }
+.booth.booth-corner:hover { box-shadow:7px 8px 0 var(--signal)!important; }
+.booth.booth-corner.selected { border-color:var(--ink)!important; box-shadow:6px 7px 0 var(--violet)!important; }
 .vm-floorplan-cta { width:100%; margin:0 0 1rem; min-height:50px; }
 #vm-loading { color:#c4bad6!important; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); }
 #vm-loading .spin { border-color:rgba(255,255,255,.2); border-top-color:var(--lime); }
@@ -401,7 +414,7 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 #vm-confirm-id { color:var(--violet)!important; }
 #vm-err-popup > div { border-radius:2px!important; box-shadow:12px 12px 0 var(--violet); }
 #vm-add-more-btn { border-radius:2px!important; background:var(--lime)!important; border:0!important; color:var(--ink)!important; box-shadow:6px 6px 0 var(--violet); }
-@media(max-width:700px){.vm-shell{padding:12px!important}.vm-header{padding:1.1rem}.vm-header::after{display:none}.vm-logo{width:92px;height:44px;flex-basis:92px}.vm-header-title{font-size:19px!important}.vm-brand-lockup{gap:.7rem}.vm-brief{font-size:11px!important;padding:1rem!important}.vm-brief-grid{grid-template-columns:1fr}.vm-schedule-row{align-items:flex-start;flex-direction:column;gap:0}.vm-resource-actions{grid-template-columns:1fr}.vm-vendor-card{align-items:flex-start;flex-direction:column}.vm-vendor-card::before{margin-bottom:-.6rem}#vm-brand,#vm-name{text-align:left}.vm-section-title{align-items:flex-start;flex-direction:column;gap:4px}.vm-map-shell{padding:1rem!important;box-shadow:6px 6px 0 var(--violet)}#vm-floor{justify-content:flex-start;min-height:350px}.vm-success-title{font-size:18px!important}.details-lightbox{padding:.5rem}.details-lightbox-bar{margin-bottom:.5rem}.details-document{width:100%;box-shadow:6px 6px 0 var(--violet)}}
+@media(max-width:700px){.main-price-strip{grid-template-columns:1fr 1fr}.main-price-heading{grid-column:span 2}.main-resource-actions{width:100%}.main-resource-actions .floorplan-cta{width:100%}.vm-shell{padding:12px!important}.vm-header{padding:1.1rem}.vm-header::after{display:none}.vm-logo{width:92px;height:44px;flex-basis:92px}.vm-header-title{font-size:19px!important}.vm-brand-lockup{gap:.7rem}.vm-brief{font-size:11px!important;padding:1rem!important}.vm-brief-grid{grid-template-columns:1fr}.vm-schedule-row{align-items:flex-start;flex-direction:column;gap:0}.vm-resource-actions{grid-template-columns:1fr}.vm-vendor-card{align-items:flex-start;flex-direction:column}.vm-vendor-card::before{margin-bottom:-.6rem}#vm-brand,#vm-name{text-align:left}.vm-section-title{align-items:flex-start;flex-direction:column;gap:4px}.vm-map-shell{padding:1rem!important;box-shadow:6px 6px 0 var(--violet)}#vm-floor{justify-content:flex-start;min-height:350px}.vm-success-title{font-size:18px!important}.details-lightbox{padding:.5rem}.details-lightbox-bar{margin-bottom:.5rem}.details-document{width:100%;box-shadow:6px 6px 0 var(--violet)}}
 </style>
 </head>
 <body>
@@ -456,6 +469,14 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
     <div class="stat"><div class="stat-num" style="color:var(--spon)" id="d-spon">—</div><div class="stat-label">Sponsor</div></div>
   </div>
 
+  <!-- BOOTH PRICING -->
+  <div class="main-price-strip" aria-label="อัตราเงินบริจาคสนับสนุนการจัดงาน">
+    <div class="main-price-heading"><strong>Booth Pricing</strong><span>อัตราเงินบริจาคสนับสนุนการจัดงาน</span></div>
+    <div class="main-price-item"><span>บูธปกติ</span><strong>5,000 ฿</strong></div>
+    <div class="main-price-item"><span>บูธหัวมุม</span><strong>5,500 ฿</strong></div>
+    <div class="main-price-item"><span>แถว Sponsor</span><strong>7,000 ฿</strong></div>
+  </div>
+
   <!-- LEGEND -->
   <div class="legend" style="justify-content:space-between;align-items:center">
     <div style="display:flex;flex-wrap:wrap;gap:.5rem 1rem">
@@ -464,10 +485,16 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
       <div class="leg"><div class="leg-dot" style="background:var(--resv)"></div>จองแล้ว</div>
       <div class="leg"><div class="leg-dot" style="background:var(--spon)"></div>Sponsor</div>
       <div class="leg"><div class="leg-dot" style="background:var(--blk)"></div>ปิด</div>
+      <div class="leg"><div class="leg-dot" style="background:#fff;border:2px solid var(--signal)"></div>บูธหัวมุม</div>
     </div>
-    <button class="floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
-      <span aria-hidden="true">▦</span> ดูผังบูธจริง
-    </button>
+    <div class="main-resource-actions">
+      <button class="floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
+        <span aria-hidden="true">▦</span> ดูผังบูธจริง
+      </button>
+      <button class="floorplan-cta details-cta" onclick="openDetailsLightbox()" aria-label="เปิดรายละเอียดและเงื่อนไขการจองฉบับเต็ม">
+        <span aria-hidden="true">≡</span> ดูรายละเอียดทั้งหมด
+      </button>
+    </div>
   </div>
 
   <div class="main-grid">
@@ -832,6 +859,7 @@ const STATUS_CLS = {
   AVAILABLE: 'b-av', PENDING_PAYMENT: 'b-pend',
   RESERVED: 'b-resv', SPONSOR: 'b-spon', BLOCKED: 'b-blk',
 };
+const CORNER_BOOTH_IDS = new Set(['B7','C1','C7','D1','D6','C12','C6','B12']);
 const STATUS_LABEL = {
   AVAILABLE: 'ว่าง', PENDING_PAYMENT: 'รอโอน',
   RESERVED: 'จองแล้ว', SPONSOR: 'Sponsor', BLOCKED: 'ปิด',
@@ -846,9 +874,10 @@ function getBoothEl(id) {
   if (!b) return `<div class="booth b-blk" style="opacity:.3">${id}</div>`;
   const cls = STATUS_CLS[b.status] || 'b-blk';
   const sel = selectedId === id ? ' selected' : '';
+  const corner = CORNER_BOOTH_IDS.has(id) ? ' booth-corner' : '';
   const timer = b.expire_at
     ? `<div class="booth-timer">${fmtRemaining(b.expire_at)}</div>` : '';
-  return `<div class="booth ${cls}${sel}" role="button" tabindex="0" aria-label="บูธ ${id}: ${b.brand || STATUS_LABEL[b.status]}"
+  return `<div class="booth ${cls}${sel}${corner}" role="button" tabindex="0" aria-label="บูธ ${id}${corner ? ' หัวมุม' : ''}: ${b.brand || STATUS_LABEL[b.status]}"
     onclick="clickBooth('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();clickBooth('${id}')}"
     title="${b.brand || STATUS_LABEL[b.status]}">${id}${timer}</div>`;
 }
@@ -1318,10 +1347,11 @@ function vmBoothEl(id) {
   const inCart  = vmCart.some(x => x.booth_id === id);
   const avail   = b.status === 'AVAILABLE';
   const cls     = inCart ? 'b-resv' : avail ? 'b-av' : 'b-blk';
+  const corner  = CORNER_BOOTH_IDS.has(id) ? ' booth-corner' : '';
   const opacity = !avail && !inCart ? 'opacity:.45;' : '';
   const cur     = avail || inCart ? 'cursor:pointer' : 'cursor:not-allowed';
   const ring    = inCart ? 'box-shadow:0 0 0 2.5px #7c3aed;' : '';
-  return `<div class="booth ${cls}" role="button" tabindex="${avail || inCart ? '0' : '-1'}" aria-label="บูธ ${id}: ${inCart ? 'เลือกแล้ว' : avail ? 'ว่าง' : STATUS_LABEL[b.status]}"
+  return `<div class="booth ${cls}${corner}" role="button" tabindex="${avail || inCart ? '0' : '-1'}" aria-label="บูธ ${id}${corner ? ' หัวมุม' : ''}: ${inCart ? 'เลือกแล้ว' : avail ? 'ว่าง' : STATUS_LABEL[b.status]}"
     style="${cur};${opacity}${ring}" onclick="vmClickBooth('${id}')"
     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();vmClickBooth('${id}')}"
     title="${inCart ? 'คลิกเพื่อยกเลิก' : avail ? 'คลิกเพื่อเลือก' : STATUS_LABEL[b.status]}">${id}${inCart ? '<div class="booth-timer">✓</div>' : ''}</div>`;
