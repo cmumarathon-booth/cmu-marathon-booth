@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMU Marathon EXPO — ผังบูธจัดจำหน่ายสินค้า</title>
+<title>CMU Marathon EXPO — Booth Selection</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
@@ -181,6 +181,72 @@ a { color: var(--accent); text-decoration: none; }
 .processing-spin { width: 40px; height: 40px; border: 3px solid #e8e4ff; border-top-color: #7c3aed; border-radius: 50%; animation: spin .7s linear infinite; }
 .processing-title { font-size: 15px; font-weight: 600; color: #1a1033; }
 .processing-sub { font-size: 12px; color: #8b80b3; line-height: 1.6; }
+
+/* ── 2026 VISUAL REFRESH ── */
+:root {
+  --bg: #f4f1fb; --surface: #eeebf7; --card: #ffffff;
+  --border: #d8d1e8; --text: #171126; --muted: #756d88;
+  --accent: #7d39eb; --accent-2: #a76dff; --accent-y: #c6ff33;
+  --av: #159447; --av-bg: #edfff3; --pend: #d87800; --pend-bg: #fff7e8;
+  --resv: #7d39eb; --resv-bg: #f3ebff; --spon: #b5e800; --spon-bg: #f5ffd9;
+  --blk: #9a93aa; --blk-bg: #f0eef4; --radius: 12px;
+  --ink: #20143a; --violet: #7d39eb; --lime: #c6ff33;
+  --shadow: 0 18px 50px rgba(32,20,58,.09);
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); font-size:14px; overflow-x:hidden; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.32; z-index:-1;
+  background-image:linear-gradient(rgba(32,20,58,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(32,20,58,.035) 1px,transparent 1px); background-size:32px 32px; }
+button, input { font-family:inherit; }
+button { transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease; }
+button:active { transform:translateY(1px) scale(.99); }
+button:focus-visible,.booth:focus-visible,input:focus-visible { outline:3px solid rgba(198,255,51,.9); outline-offset:3px; }
+.topbar { background:rgba(244,241,251,.88); border-bottom:1px solid rgba(32,20,58,.1); padding:.9rem clamp(1rem,4vw,3.5rem); backdrop-filter:blur(18px); box-shadow:none; }
+.topbar-brand::before { content:"10"; display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:var(--ink); color:var(--lime); font-size:13px; font-weight:600; box-shadow:inset 0 0 0 5px rgba(198,255,51,.14); }
+.brand-text { color:var(--ink); font-size:13px; letter-spacing:.05em; }
+.brand-sub { color:var(--muted); letter-spacing:.02em; }
+#login-btn,#logout-btn { border:1px solid var(--ink); background:var(--ink); color:#fff; padding:8px 16px; }
+#login-btn:hover,#logout-btn:hover { background:var(--violet); border-color:var(--violet); box-shadow:0 8px 24px rgba(125,57,235,.25); }
+#admin-badge { background:var(--lime); color:var(--ink); }
+.container { max-width:1240px; padding:0 clamp(1rem,3vw,2rem) 3rem; }
+.expo-hero { position:relative; min-height:230px; margin:1rem 0 1.15rem; padding:clamp(1.4rem,4vw,3rem); border-radius:28px; background:var(--ink); color:#fff; overflow:hidden; box-shadow:var(--shadow); display:flex; align-items:flex-end; }
+.expo-hero::before { content:""; position:absolute; inset:0; opacity:.5; background:radial-gradient(circle at 78% 32%,rgba(167,109,255,.9),transparent 18%),radial-gradient(circle at 92% 60%,rgba(198,255,51,.5),transparent 12%),linear-gradient(125deg,transparent 45%,rgba(125,57,235,.28)); }
+.expo-hero-copy { position:relative; z-index:2; max-width:650px; }
+.eyebrow { color:var(--lime); font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; margin-bottom:.65rem; }
+.expo-hero h1 { max-width:620px; font-size:clamp(29px,4vw,50px); line-height:1.08; letter-spacing:-.045em; font-weight:600; }
+.expo-hero p { max-width:520px; margin-top:.8rem; color:#c8c0d8; font-size:13px; }
+.motion-mark { position:absolute; right:clamp(1rem,5vw,4rem); top:22px; width:270px; height:180px; transform:rotate(-8deg); opacity:.95; }
+.motion-mark i { position:absolute; right:0; width:100%; height:18px; border-radius:50%; border:2px solid var(--accent-2); transform:skewX(-28deg); animation:pulseLine 3.6s ease-in-out infinite; }
+.motion-mark i:nth-child(1){top:5px}.motion-mark i:nth-child(2){top:35px;width:88%;animation-delay:.2s}.motion-mark i:nth-child(3){top:65px;width:74%;border-color:var(--lime);animation-delay:.4s}.motion-mark i:nth-child(4){top:95px;width:58%;animation-delay:.6s}
+@keyframes pulseLine { 50% { transform:skewX(-28deg) translateX(-9px); opacity:.55; } }
+.dashboard { gap:10px; margin-bottom:1rem; }
+.stat { position:relative; overflow:hidden; background:rgba(255,255,255,.82); border:1px solid rgba(32,20,58,.1); border-radius:18px; padding:1rem .8rem; text-align:left; box-shadow:0 8px 30px rgba(32,20,58,.04); }
+.stat::after { content:""; position:absolute; width:44px; height:44px; border:1px solid rgba(125,57,235,.16); border-radius:50%; right:-12px; top:-12px; }
+.stat-num { font-size:28px; line-height:1; color:var(--ink); }
+.stat-label { font-size:11px; margin-top:7px; }
+.legend { background:rgba(255,255,255,.58); border:1px solid rgba(32,20,58,.08); padding:9px 12px; border-radius:14px; backdrop-filter:blur(8px); }
+.leg-dot { border-radius:50%; box-shadow:0 0 0 3px #fff; }
+.main-grid { grid-template-columns:minmax(0,1fr) 300px; gap:14px; }
+.floor-outer { position:relative; min-height:410px; background:#fff; border:1px solid rgba(32,20,58,.1); border-radius:24px; padding:1.5rem; box-shadow:var(--shadow); }
+.floor-outer::before { content:"FLOOR 01  /  SELECT A BOOTH"; display:block; margin-bottom:1rem; color:var(--muted); font-size:10px; font-weight:600; letter-spacing:.14em; }
+.floor { align-items:center; justify-content:center; min-height:320px; }
+.booth { width:50px; height:50px; border-radius:12px; transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,filter .18s ease; }
+.booth:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 10px 20px rgba(32,20,58,.15),0 0 0 2px var(--accent); }
+.booth.selected { box-shadow:0 10px 25px rgba(125,57,235,.25),0 0 0 2px var(--accent); transform:translateY(-2px); }
+.panel { position:sticky; top:82px; }
+.panel-card { border:1px solid rgba(32,20,58,.1); border-radius:22px; padding:1.35rem; box-shadow:0 12px 35px rgba(32,20,58,.06); }
+#panel-default { min-height:150px; background:var(--ink); color:#fff; position:relative; overflow:hidden; }
+#panel-default::after { content:"↗"; position:absolute; right:18px; bottom:8px; color:var(--lime); font-size:54px; font-weight:400; line-height:1; }
+#panel-default .panel-sub { color:#ada4bd; max-width:170px; }
+.panel-title { font-size:14px; }
+.info-row { padding:7px 0; }
+.save-btn { background:var(--ink); color:var(--lime); padding:10px; }
+.save-btn:hover:not(:disabled) { background:var(--violet); opacity:1; }
+.modal { border:none; border-radius:24px; box-shadow:0 24px 80px rgba(17,10,30,.25); }
+.toast { background:var(--ink); color:var(--lime); box-shadow:0 12px 40px rgba(32,20,58,.22); }
+@media (max-width:900px){ .expo-hero{min-height:210px}.motion-mark{right:-70px;opacity:.55}.panel{position:static}.main-grid{grid-template-columns:1fr} }
+@media (max-width:600px){ .topbar{padding:.75rem 1rem}.topbar-brand::before{display:none}.brand-sub{display:none}.expo-hero{border-radius:22px;padding:1.35rem;min-height:220px}.expo-hero h1{font-size:29px}.expo-hero p{font-size:12px;max-width:80%}.motion-mark{width:190px;right:-85px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.stat{padding:.9rem}.floor-outer{padding:1rem;border-radius:20px}.legend{align-items:flex-start!important}.panel-card{border-radius:18px} }
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important} }
 </style>
 </head>
 <body>
@@ -201,7 +267,16 @@ a { color: var(--accent); text-decoration: none; }
 </div>
 
 <!-- MAIN -->
-<div class="container" style="margin-top:1rem">
+<div class="container">
+
+  <section class="expo-hero" aria-labelledby="expo-title">
+    <div class="expo-hero-copy">
+      <div class="eyebrow">10th CMU Chiang Mai Marathon · Expo</div>
+      <h1 id="expo-title">พื้นที่ของแบรนด์<br>ที่พร้อมก้าวไปข้างหน้า</h1>
+      <p>สำรวจสถานะและเลือกตำแหน่งบูธได้จากผังด้านล่าง ข้อมูลอัปเดตจากระบบแบบเรียลไทม์</p>
+    </div>
+    <div class="motion-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </section>
 
   <!-- DASHBOARD -->
   <div class="dashboard" id="dashboard">
@@ -576,7 +651,8 @@ function getBoothEl(id) {
   const sel = selectedId === id ? ' selected' : '';
   const timer = b.expire_at
     ? `<div class="booth-timer">${fmtRemaining(b.expire_at)}</div>` : '';
-  return `<div class="booth ${cls}${sel}" onclick="clickBooth('${id}')"
+  return `<div class="booth ${cls}${sel}" role="button" tabindex="0" aria-label="บูธ ${id}: ${b.brand || STATUS_LABEL[b.status]}"
+    onclick="clickBooth('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();clickBooth('${id}')}"
     title="${b.brand || STATUS_LABEL[b.status]}">${id}${timer}</div>`;
 }
 
@@ -1048,7 +1124,9 @@ function vmBoothEl(id) {
   const opacity = !avail && !inCart ? 'opacity:.45;' : '';
   const cur     = avail || inCart ? 'cursor:pointer' : 'cursor:not-allowed';
   const ring    = inCart ? 'box-shadow:0 0 0 2.5px #7c3aed;' : '';
-  return `<div class="booth ${cls}" style="${cur};${opacity}${ring}" onclick="vmClickBooth('${id}')"
+  return `<div class="booth ${cls}" role="button" tabindex="${avail || inCart ? '0' : '-1'}" aria-label="บูธ ${id}: ${inCart ? 'เลือกแล้ว' : avail ? 'ว่าง' : STATUS_LABEL[b.status]}"
+    style="${cur};${opacity}${ring}" onclick="vmClickBooth('${id}')"
+    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();vmClickBooth('${id}')}"
     title="${inCart ? 'คลิกเพื่อยกเลิก' : avail ? 'คลิกเพื่อเลือก' : STATUS_LABEL[b.status]}">${id}${inCart ? '<div class="booth-timer">✓</div>' : ''}</div>`;
 }
 
