@@ -346,6 +346,23 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 .vm-header-sub { color:var(--lime)!important; margin-top:7px; font-size:10px!important; letter-spacing:.12em; text-transform:uppercase; }
 .vm-brief { position:relative; background:#ede8f6!important; border-radius:0!important; border-left:7px solid var(--violet)!important; padding:1.2rem 1.35rem!important; color:var(--ink)!important; line-height:1.85!important; }
 .vm-brief-title { color:var(--violet)!important; text-transform:uppercase; letter-spacing:.08em; }
+.vm-brief-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; margin:.85rem 0; background:rgba(21,11,43,.18); border:1px solid rgba(21,11,43,.18); }
+.vm-price { background:#fff; padding:.75rem; }
+.vm-price-label { display:block; color:#756d88; font-size:9px; text-transform:uppercase; letter-spacing:.07em; }
+.vm-price strong { display:block; color:var(--ink); font-size:17px; line-height:1.2; margin-top:3px; }
+.vm-schedule { display:grid; gap:5px; margin-top:.7rem; padding-top:.7rem; border-top:1px solid rgba(21,11,43,.16); }
+.vm-schedule-row { display:flex; justify-content:space-between; gap:1rem; }
+.vm-schedule-row strong { white-space:nowrap; color:var(--violet); }
+.vm-resource-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1rem; }
+.vm-resource-actions .floorplan-cta { width:100%; margin:0; }
+.details-cta { background:#fff; color:var(--ink); box-shadow:5px 5px 0 var(--violet); }
+.details-cta::after { content:"↗"; }
+.details-lightbox { display:none; position:fixed; inset:0; z-index:910; background:rgba(10,5,23,.94); padding:1rem; overflow:auto; }
+.details-lightbox.open { display:block; }
+.details-lightbox-bar { position:sticky; top:0; z-index:2; max-width:1200px; margin:0 auto .75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.65rem .8rem; background:var(--ink); border:1px solid rgba(255,255,255,.18); color:#fff; }
+.details-lightbox-title { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+.details-close { width:38px; height:38px; border:1px solid var(--lime); border-radius:2px; background:transparent; color:var(--lime); cursor:pointer; font-size:18px; }
+.details-document { display:block; width:min(1200px,100%); height:auto; margin:0 auto 2rem; background:#fff; box-shadow:12px 12px 0 var(--violet); }
 .vm-floorplan-cta { width:100%; margin:0 0 1rem; min-height:50px; }
 #vm-loading { color:#c4bad6!important; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); }
 #vm-loading .spin { border-color:rgba(255,255,255,.2); border-top-color:var(--lime); }
@@ -384,7 +401,7 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 #vm-confirm-id { color:var(--violet)!important; }
 #vm-err-popup > div { border-radius:2px!important; box-shadow:12px 12px 0 var(--violet); }
 #vm-add-more-btn { border-radius:2px!important; background:var(--lime)!important; border:0!important; color:var(--ink)!important; box-shadow:6px 6px 0 var(--violet); }
-@media(max-width:700px){.vm-shell{padding:12px!important}.vm-header{padding:1.1rem}.vm-header::after{display:none}.vm-logo{width:92px;height:44px;flex-basis:92px}.vm-header-title{font-size:19px!important}.vm-brand-lockup{gap:.7rem}.vm-brief{font-size:11px!important;padding:1rem!important}.vm-vendor-card{align-items:flex-start;flex-direction:column}.vm-vendor-card::before{margin-bottom:-.6rem}#vm-brand,#vm-name{text-align:left}.vm-section-title{align-items:flex-start;flex-direction:column;gap:4px}.vm-map-shell{padding:1rem!important;box-shadow:6px 6px 0 var(--violet)}#vm-floor{justify-content:flex-start;min-height:350px}.vm-success-title{font-size:18px!important}}
+@media(max-width:700px){.vm-shell{padding:12px!important}.vm-header{padding:1.1rem}.vm-header::after{display:none}.vm-logo{width:92px;height:44px;flex-basis:92px}.vm-header-title{font-size:19px!important}.vm-brand-lockup{gap:.7rem}.vm-brief{font-size:11px!important;padding:1rem!important}.vm-brief-grid{grid-template-columns:1fr}.vm-schedule-row{align-items:flex-start;flex-direction:column;gap:0}.vm-resource-actions{grid-template-columns:1fr}.vm-vendor-card{align-items:flex-start;flex-direction:column}.vm-vendor-card::before{margin-bottom:-.6rem}#vm-brand,#vm-name{text-align:left}.vm-section-title{align-items:flex-start;flex-direction:column;gap:4px}.vm-map-shell{padding:1rem!important;box-shadow:6px 6px 0 var(--violet)}#vm-floor{justify-content:flex-start;min-height:350px}.vm-success-title{font-size:18px!important}.details-lightbox{padding:.5rem}.details-lightbox-bar{margin-bottom:.5rem}.details-document{width:100%;box-shadow:6px 6px 0 var(--violet)}}
 </style>
 </head>
 <body>
@@ -605,15 +622,29 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
       <div class="vm-brief-title" style="font-weight:600;color:#7c3aed;margin-bottom:.5rem;font-size:13px">รายละเอียดการจอง</div>
       <div>• พื้นที่บริเวณศาลาอ่างแก้ว มหาวิทยาลัยเชียงใหม่</div>
       <div>• ขนาดบูธ 3×3 เมตร พร้อมโต๊ะ 1 ตัว เก้าอี้ 2 ตัว ปลั๊กไฟ 1 จุด</div>
-      <div>• เปิดจำหน่ายสินค้า 09:00–18:00 น. วันที่ 7–8 พ.ย. 2569</div>
+      <div class="vm-brief-grid" aria-label="อัตราเงินบริจาคสนับสนุนการจัดงาน">
+        <div class="vm-price"><span class="vm-price-label">บูธปกติ</span><strong>5,000 ฿</strong></div>
+        <div class="vm-price"><span class="vm-price-label">บูธหัวมุม</span><strong>5,500 ฿</strong></div>
+        <div class="vm-price"><span class="vm-price-label">แถว Sponsor</span><strong>7,000 ฿</strong></div>
+      </div>
+      <div class="vm-schedule" aria-label="วันและเวลาเปิดจำหน่ายสินค้า">
+        <div class="vm-schedule-row"><strong>6 พ.ย. 2569</strong><span>09:00–18:00 น. · เริ่มเข้าจัดเตรียมบูธ</span></div>
+        <div class="vm-schedule-row"><strong>7 พ.ย. 2569</strong><span>08:00–21:00 น. · วันรับ BIB</span></div>
+        <div class="vm-schedule-row"><strong>8 พ.ย. 2569</strong><span>เริ่มงาน–12:00 น. · วันแข่งขัน</span></div>
+      </div>
       <div>• จำหน่ายสินค้าที่เกี่ยวข้องกับกีฬาเท่านั้น ห้ามสินค้าละเมิดลิขสิทธิ์</div>
       <div>• การจองสมบูรณ์เมื่อสมาคมได้รับเงินบริจาคแล้วเท่านั้น</div>
     </div>
 
-    <!-- ปุ่มดูผังจริง -->
-    <button class="floorplan-cta vm-floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
-      <span aria-hidden="true">▦</span> ดูผังบูธจริง
-    </button>
+    <!-- เอกสารประกอบการจอง -->
+    <div class="vm-resource-actions">
+      <button class="floorplan-cta vm-floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
+        <span aria-hidden="true">▦</span> ดูผังบูธจริง
+      </button>
+      <button class="floorplan-cta details-cta" onclick="openDetailsLightbox()" aria-label="เปิดรายละเอียดและเงื่อนไขการจองฉบับเต็ม">
+        <span aria-hidden="true">≡</span> ดูรายละเอียดทั้งหมด
+      </button>
+    </div>
     <div id="vm-loading" style="text-align:center;padding:3rem;color:#8b80b3">
       <div class="spin" style="margin:0 auto 1rem"></div>กำลังโหลด...
     </div>
@@ -687,6 +718,15 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
   <button onclick="closeFloorplanLightbox()" style="align-self:flex-end;margin:0 0 .75rem;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:18px;cursor:pointer">✕</button>
   <img id="floorplan-img" src="floorplan.jpg" alt="ผังบูธจริง" style="max-width:100%;max-height:80vh;border-radius:12px;object-fit:contain">
   <div style="color:#fff;font-size:11px;margin-top:.75rem;opacity:.7">แตะนอกรูปเพื่อปิด</div>
+</div>
+
+<!-- BOOKING DETAILS LIGHTBOX -->
+<div class="details-lightbox" id="details-lightbox" role="dialog" aria-modal="true" aria-labelledby="details-lightbox-title">
+  <div class="details-lightbox-bar">
+    <div class="details-lightbox-title" id="details-lightbox-title">รายละเอียดและเงื่อนไขการจองบูธ</div>
+    <button class="details-close" onclick="closeDetailsLightbox()" aria-label="ปิดรายละเอียด">✕</button>
+  </div>
+  <img class="details-document" src="booth-details.jpg" alt="รายละเอียดการร่วมบริจาคเพื่อรับสิทธิ์จำหน่ายสินค้าในงาน CMU Marathon Expo">
 </div>
 
 <!-- CONFIRM BOOTH MODAL (vendor) -->
@@ -1436,9 +1476,21 @@ function openFloorplanLightbox() {
 function closeFloorplanLightbox() {
   document.getElementById('floorplan-lightbox').style.display = 'none';
 }
+function openDetailsLightbox() {
+  document.getElementById('details-lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetailsLightbox() {
+  document.getElementById('details-lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
 // ปิดเมื่อคลิกพื้นหลัง (นอกรูป)
 document.addEventListener('click', (e) => {
   if (e.target.id === 'floorplan-lightbox') closeFloorplanLightbox();
+  if (e.target.id === 'details-lightbox') closeDetailsLightbox();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDetailsLightbox();
 });
 
 // ── ENTRY POINT ───────────────────────────────────────────────
