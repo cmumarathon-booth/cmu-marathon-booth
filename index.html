@@ -333,6 +333,58 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 .toast { border-radius:2px; border-left:5px solid var(--lime); }
 @media(max-width:900px){.expo-hero{min-height:390px}.main-grid{grid-template-columns:1fr}.panel{position:static}.telemetry{grid-template-columns:1fr 1fr}.telemetry-item:nth-child(2){border-right:0}.motion-mark{right:-110px}.dashboard{grid-template-columns:repeat(5,1fr)}}
 @media(max-width:600px){.container{padding-left:12px;padding-right:12px}.expo-hero{margin:0 -12px;min-height:460px;padding:2rem 1.25rem}.hero-event-logo{width:150px;height:58px}.expo-hero h1{font-size:48px;max-width:330px}.expo-hero p{max-width:83%}.expo-hero::after{display:none}.motion-mark{right:-145px;top:115px}.telemetry{margin:0 -12px 1rem;padding:0;grid-template-columns:1fr 1fr}.telemetry-item{padding:8px 10px}.dashboard{grid-template-columns:repeat(2,1fr)}.stat:first-child{grid-column:span 2}.main-grid{margin:0}.floor-outer::before{font-size:8px}.floor-outer{min-height:470px}.panel-card{padding:1.15rem}.legend{gap:10px}.floorplan-cta{width:100%;min-height:48px}}
+
+/* ── VENDOR MISSION MODE ── */
+#vendor-mode { background:var(--ink)!important; color:#fff; }
+#vendor-mode::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.28; background-image:linear-gradient(rgba(198,255,51,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(198,255,51,.08) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,#000,transparent 72%); }
+.vm-shell { position:relative; z-index:1; max-width:1060px!important; padding:clamp(1rem,3vw,2.5rem)!important; }
+.vm-header { position:relative; text-align:left!important; margin-bottom:1rem!important; padding:1.5rem 1.5rem 1.3rem; border:1px solid rgba(255,255,255,.16); background:rgba(36,20,68,.74); overflow:hidden; }
+.vm-header::after { content:"VENDOR ACCESS // AUTHORIZED TOKEN"; position:absolute; right:14px; top:12px; color:rgba(255,255,255,.35); font-size:8px; letter-spacing:.15em; }
+.vm-brand-lockup { display:flex; align-items:center; gap:1rem; }
+.vm-logo { width:128px; height:54px; flex:0 0 128px; background-position:left center; }
+.vm-header-title { font-size:clamp(20px,3vw,32px)!important; line-height:1!important; letter-spacing:-.04em; color:#fff!important; text-transform:uppercase; }
+.vm-header-sub { color:var(--lime)!important; margin-top:7px; font-size:10px!important; letter-spacing:.12em; text-transform:uppercase; }
+.vm-brief { position:relative; background:#ede8f6!important; border-radius:0!important; border-left:7px solid var(--violet)!important; padding:1.2rem 1.35rem!important; color:var(--ink)!important; line-height:1.85!important; }
+.vm-brief-title { color:var(--violet)!important; text-transform:uppercase; letter-spacing:.08em; }
+.vm-floorplan-cta { width:100%; margin:0 0 1rem; min-height:50px; }
+#vm-loading { color:#c4bad6!important; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); }
+#vm-loading .spin { border-color:rgba(255,255,255,.2); border-top-color:var(--lime); }
+.vm-vendor-card { display:flex; align-items:center; justify-content:space-between; gap:1rem; background:var(--lime)!important; border-radius:0!important; padding:1rem 1.25rem!important; margin-bottom:1rem!important; color:var(--ink); box-shadow:7px 7px 0 var(--violet); }
+.vm-vendor-card::before { content:"AUTHORIZED VENDOR"; color:rgba(21,11,43,.58); font-size:8px; letter-spacing:.12em; }
+#vm-brand { color:var(--ink)!important; font-size:15px!important; text-align:right; }
+#vm-name { color:rgba(21,11,43,.7)!important; text-align:right; }
+.vm-section-title { display:flex; align-items:center; justify-content:space-between; color:#fff!important; font-size:13px!important; text-transform:uppercase; letter-spacing:.08em; }
+.vm-section-title::after { content:"SELECT AVAILABLE POSITION"; color:var(--lime); font-size:8px; letter-spacing:.13em; }
+.vm-map-shell { position:relative; background:#e9e5f0!important; border:0!important; border-radius:0!important; padding:1.5rem!important; overflow-x:auto; box-shadow:10px 10px 0 var(--violet); }
+.vm-map-shell::before { content:"EXHIBITION GRID // LIVE STATUS"; display:block; color:var(--ink); font-size:9px; font-weight:600; letter-spacing:.13em; border-bottom:1px solid rgba(21,11,43,.25); padding-bottom:.65rem; margin-bottom:1rem; }
+#vm-floor { min-height:370px; display:flex; align-items:center; justify-content:center; background-image:linear-gradient(rgba(21,11,43,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(21,11,43,.055) 1px,transparent 1px); background-size:24px 24px; }
+.vm-legend { color:#bdb4ce!important; font-size:10px!important; text-transform:uppercase; letter-spacing:.05em; }
+#vm-cart { z-index:4; bottom:12px!important; background:var(--ink)!important; border:1px solid var(--lime)!important; padding:1rem!important; margin-top:1.5rem!important; box-shadow:10px 10px 0 var(--violet); }
+#vm-cart > div:first-child { border-bottom:1px solid rgba(255,255,255,.15); padding-bottom:.7rem; }
+#vm-cart > div:first-child > div { color:#bdb4ce!important; }
+#vm-cart-count,#vm-cart-total { color:var(--lime)!important; }
+#vm-cart-items span { background:var(--lime)!important; border:0!important; border-radius:1px!important; color:var(--ink)!important; font-weight:600!important; }
+#vm-confirm-cart-btn { background:var(--lime)!important; color:var(--ink)!important; border-radius:2px!important; min-height:48px; text-transform:uppercase; letter-spacing:.07em; box-shadow:5px 5px 0 var(--violet); }
+#vm-confirm-cart-btn:hover { background:#fff!important; transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--violet); }
+#vm-booked { color:#fff; }
+.vm-success-head { text-align:left!important; border-left:7px solid var(--lime); background:rgba(255,255,255,.06); padding:1.2rem 1.3rem; }
+.vm-success-icon { font-size:0!important; }.vm-success-icon::after { content:"POSITION LOCKED"; color:var(--lime); font-size:10px; font-weight:600; letter-spacing:.15em; }
+.vm-success-title { color:#fff!important; font-size:22px!important; text-transform:uppercase; }
+#vm-booked-timer { color:#ffb16f!important; }
+.vm-booked-card { background:#ede8f6!important; border-radius:0!important; color:var(--ink); border-top:6px solid var(--violet); }
+.vm-booked-card > div:first-child { color:var(--violet)!important; text-transform:uppercase; letter-spacing:.1em; }
+#vm-booked-list > div { border-color:rgba(21,11,43,.14)!important; }
+#vm-booked-total { color:var(--violet)!important; }
+.vm-payment-card { background:#ffe4c5!important; border:0!important; border-radius:0!important; border-left:7px solid var(--signal)!important; color:var(--ink); }
+.vm-line-btn { border-radius:2px!important; box-shadow:6px 6px 0 #038f3c; }
+.vm-line-hint { color:#a99fba!important; }
+#vm-error { color:#fff; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); }
+#vm-error-msg { color:#fff!important; }#vm-error > div:last-child{color:#a99fba!important}
+#vm-confirm-overlay .modal { background:var(--paper); border-top:7px solid var(--lime); }
+#vm-confirm-id { color:var(--violet)!important; }
+#vm-err-popup > div { border-radius:2px!important; box-shadow:12px 12px 0 var(--violet); }
+#vm-add-more-btn { border-radius:2px!important; background:var(--lime)!important; border:0!important; color:var(--ink)!important; box-shadow:6px 6px 0 var(--violet); }
+@media(max-width:700px){.vm-shell{padding:12px!important}.vm-header{padding:1.1rem}.vm-header::after{display:none}.vm-logo{width:92px;height:44px;flex-basis:92px}.vm-header-title{font-size:19px!important}.vm-brand-lockup{gap:.7rem}.vm-brief{font-size:11px!important;padding:1rem!important}.vm-vendor-card{align-items:flex-start;flex-direction:column}.vm-vendor-card::before{margin-bottom:-.6rem}#vm-brand,#vm-name{text-align:left}.vm-section-title{align-items:flex-start;flex-direction:column;gap:4px}.vm-map-shell{padding:1rem!important;box-shadow:6px 6px 0 var(--violet)}#vm-floor{justify-content:flex-start;min-height:350px}.vm-success-title{font-size:18px!important}}
 </style>
 </head>
 <body>
@@ -360,7 +412,7 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
     <div class="expo-hero-copy">
       <div class="event-logo hero-event-logo" role="img" aria-label="โลโก้ CMU Chiang Mai Marathon"></div>
       <div class="eyebrow">System online · 10th CMU Chiang Mai Marathon</div>
-      <h1 id="expo-title">Select your<br><span>booth.</span></h1>
+      <h1 id="expo-title">Select your<br><span>position.</span></h1>
       <p>เข้าสู่ระบบจัดสรรพื้นที่ CMU Marathon Expo สำรวจสถานะ เลือกตำแหน่ง และยืนยันบูธจากแผนผังแบบเรียลไทม์</p>
       <div class="hero-actions">
         <a class="hero-register" href="https://forms.gle/xtuocSLt8R7JVP7G9" target="_blank" rel="noopener noreferrer">
@@ -537,15 +589,20 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
 
 <!-- VENDOR SELECTION MODE -->
 <div id="vendor-mode" style="display:none;position:fixed;inset:0;background:#fff;z-index:500;overflow-y:auto">
-  <div style="max-width:640px;margin:0 auto;padding:2rem 1rem">
-    <div style="text-align:center;margin-bottom:1.5rem">
-      <div style="font-size:22px;font-weight:600;color:#7c3aed;margin-bottom:4px">CMU Marathon EXPO</div>
-      <div style="font-size:13px;color:#8b80b3">เลือกบูธที่ต้องการ</div>
+  <div class="vm-shell" style="max-width:640px;margin:0 auto;padding:2rem 1rem">
+    <div class="vm-header" style="text-align:center;margin-bottom:1.5rem">
+      <div class="vm-brand-lockup">
+        <div class="event-logo vm-logo" role="img" aria-label="โลโก้ CMU Chiang Mai Marathon"></div>
+        <div>
+          <div class="vm-header-title" style="font-size:22px;font-weight:600;color:#7c3aed;margin-bottom:4px">CMU Marathon EXPO</div>
+          <div class="vm-header-sub" style="font-size:13px;color:#8b80b3">เลือกบูธที่ต้องการ</div>
+        </div>
+      </div>
     </div>
 
     <!-- รายละเอียดการจอง -->
-    <div style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:12px;color:#4c1d95;line-height:1.8">
-      <div style="font-weight:600;color:#7c3aed;margin-bottom:.5rem;font-size:13px">รายละเอียดการจอง</div>
+    <div class="vm-brief" style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:12px;color:#4c1d95;line-height:1.8">
+      <div class="vm-brief-title" style="font-weight:600;color:#7c3aed;margin-bottom:.5rem;font-size:13px">รายละเอียดการจอง</div>
       <div>• พื้นที่บริเวณศาลาอ่างแก้ว มหาวิทยาลัยเชียงใหม่</div>
       <div>• ขนาดบูธ 3×3 เมตร พร้อมโต๊ะ 1 ตัว เก้าอี้ 2 ตัว ปลั๊กไฟ 1 จุด</div>
       <div>• เปิดจำหน่ายสินค้า 09:00–18:00 น. วันที่ 7–8 พ.ย. 2569</div>
@@ -554,22 +611,22 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
     </div>
 
     <!-- ปุ่มดูผังจริง -->
-    <button onclick="openFloorplanLightbox()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#fff;border:1.5px solid #ddd6fe;border-radius:99px;color:#7c3aed;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:1rem;font-family:Prompt,sans-serif">
-      🖼️ ดูผังบูธจริง
+    <button class="floorplan-cta vm-floorplan-cta" onclick="openFloorplanLightbox()" aria-label="เปิดดูผังบูธจริงแบบเต็มจอ">
+      <span aria-hidden="true">▦</span> ดูผังบูธจริง
     </button>
     <div id="vm-loading" style="text-align:center;padding:3rem;color:#8b80b3">
       <div class="spin" style="margin:0 auto 1rem"></div>กำลังโหลด...
     </div>
     <div id="vm-content" style="display:none">
-      <div style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.5rem">
+      <div class="vm-vendor-card" style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.5rem">
         <div style="font-size:13px;font-weight:600;color:#7c3aed" id="vm-brand"></div>
         <div style="font-size:11px;color:#8b80b3" id="vm-name"></div>
       </div>
-      <div style="font-size:13px;font-weight:500;color:#1a1033;margin-bottom:.75rem">เลือกบูธที่ต้องการ (คลิกบูธที่ว่าง)</div>
-      <div style="background:#faf9ff;border:1.5px solid #e8e4ff;border-radius:16px;padding:1.25rem;overflow-x:auto;margin-bottom:1rem">
+      <div class="vm-section-title" style="font-size:13px;font-weight:500;color:#1a1033;margin-bottom:.75rem">เลือกบูธที่ต้องการ (คลิกบูธที่ว่าง)</div>
+      <div class="vm-map-shell" style="background:#faf9ff;border:1.5px solid #e8e4ff;border-radius:16px;padding:1.25rem;overflow-x:auto;margin-bottom:1rem">
         <div id="vm-floor" style="min-width:480px"></div>
       </div>
-      <div style="font-size:11px;color:#8b80b3;margin-bottom:1.5rem">
+      <div class="vm-legend" style="font-size:11px;color:#8b80b3;margin-bottom:1.5rem">
         <span style="display:inline-block;width:10px;height:10px;background:#f0fdf4;border:1.5px solid #16a34a;border-radius:3px;margin-right:4px"></span>ว่าง — คลิกเพื่อเลือก
         <span style="display:inline-block;width:10px;height:10px;background:#f5f3ff;border:1.5px solid #7c3aed;border-radius:3px;margin:0 4px 0 12px"></span>จองแล้ว
       </div>
@@ -585,14 +642,14 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
     </div>
 
     <div id="vm-booked" style="display:none;padding:1.5rem 0">
-      <div style="text-align:center;margin-bottom:1.5rem">
-        <div style="font-size:36px;margin-bottom:.5rem">✅</div>
-        <div style="font-size:16px;font-weight:600;color:#1a1033">เลือกบูธเรียบร้อยแล้ว</div>
+      <div class="vm-success-head" style="text-align:center;margin-bottom:1.5rem">
+        <div class="vm-success-icon" style="font-size:36px;margin-bottom:.5rem">✅</div>
+        <div class="vm-success-title" style="font-size:16px;font-weight:600;color:#1a1033">เลือกบูธเรียบร้อยแล้ว</div>
         <div style="font-size:12px;color:#d97706;margin-top:.25rem" id="vm-booked-timer"></div>
       </div>
 
       <!-- สรุปบูธ -->
-      <div style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
+      <div class="vm-booked-card" style="background:#f5f3ff;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
         <div style="font-size:11px;font-weight:600;color:#7c3aed;margin-bottom:.75rem">บูธที่จอง</div>
         <div id="vm-booked-list"></div>
         <div style="border-top:1px solid #e8e4ff;margin-top:.75rem;padding-top:.75rem;display:flex;justify-content:space-between">
@@ -602,7 +659,7 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
       </div>
 
       <!-- บัญชีโอนเงิน -->
-      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
+      <div class="vm-payment-card" style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:16px;padding:1rem 1.25rem;margin-bottom:1rem">
         <div style="font-size:11px;font-weight:600;color:#d97706;margin-bottom:.5rem">โอนเงินค่าบูธภายในเวลาที่กำหนด</div>
         <div style="font-size:13px;color:#1a1033;font-weight:500">ธนาคารกรุงไทย</div>
         <div style="font-size:20px;font-weight:600;color:#1a1033;letter-spacing:.05em;margin:.25rem 0">521-3073433</div>
@@ -610,12 +667,12 @@ body::before { z-index:0; opacity:.2; background-image:linear-gradient(rgba(198,
       </div>
 
       <!-- ปุ่ม LINE -->
-      <a href="https://lin.ee/XaBLZsn" target="_blank"
+      <a class="vm-line-btn" href="https://lin.ee/XaBLZsn" target="_blank" rel="noopener noreferrer"
         style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#06C755;color:#fff;border:none;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:Prompt,sans-serif;box-sizing:border-box">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.07 1.67 5.77 4.24 7.5L5.5 22l3.75-1.97C10.27 20.65 11.12 21 12 21c5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
         ส่งหลักฐานการโอนทาง LINE
       </a>
-      <div style="font-size:11px;color:#8b80b3;text-align:center;margin-top:.5rem">กดเพื่อเปิด LINE Official ของสมาคม</div>
+      <div class="vm-line-hint" style="font-size:11px;color:#8b80b3;text-align:center;margin-top:.5rem">กดเพื่อเปิด LINE Official ของสมาคม</div>
     </div>
     <div id="vm-error" style="display:none;text-align:center;padding:2rem">
       <div style="font-size:40px;margin-bottom:1rem">⚠️</div>
